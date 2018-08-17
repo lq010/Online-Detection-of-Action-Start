@@ -16,14 +16,14 @@ def c3d_model(input_shape):
 
     weight_decay = 0.005
     dropout_ratio = 0.5
-    nb_classes = 2
+    nb_classes = 20+1
 
     # define the input placeholder as a tensor with shap input_shape. 
     X_input = Input(input_shape)
 
     #layer Conv1
     x = Conv3D(64,(3,3,3),strides=(1,1,1),padding='same',
-               activation='relu',kernel_regularizer=l2(weight_decay))(inputs)
+               activation='relu',kernel_regularizer=l2(weight_decay))(X_input)
     x = MaxPool3D((2,2,1),strides=(2,2,1),padding='same')(x)
 
     #layer Conv2
@@ -58,5 +58,5 @@ def c3d_model(input_shape):
     x = Dense(nb_classes,kernel_regularizer=l2(weight_decay))(x)
     x = Activation('softmax')(x)
 
-    model = Model(inputs, x)
+    model = Model(X_input, x)
     return model
