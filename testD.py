@@ -1,3 +1,4 @@
+'''Test the input data, to make sure there's no error'''
 from train import preprocess_input
 import json
 import sys
