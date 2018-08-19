@@ -6,8 +6,7 @@ import os
 import random
 import json
 import sys
-sys.path.insert(0,'../')
-import constantPaths as path
+import videoPaths as path
 
 #path of the original val videos
 val_videos_path = path.VALIDATION_VIDEOS_PATH

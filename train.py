@@ -10,8 +10,9 @@ import numpy as np
 import random
 import cv2
 import matplotlib
-matplotlib.use('AGG')
+# matplotlib.use('AGG')
 import matplotlib.pyplot as plt
+import util
 
 
 def plot_history(history, result_dir):
@@ -52,9 +53,7 @@ def save_history(history, result_dir):
 
         
 def process_batch(windows, windows_length, img_path, train=True):
-    random.shuffle(windows)
     N = len(windows)
-    # batch = np.zeros((num,16,128,171,3),dtype='float32')
     X_s = np.zeros((N,windows_length,112,112,3),dtype='float32') #start windows
     X_s_labels = np.zeros(N,dtype='int')
     X_f =  np.zeros((N,windows_length,112,112,3),dtype='float32') #follow up windows
@@ -132,51 +131,6 @@ def preprocess(inputs):
     # inputs *=2.
     return inputs
 
-def preprocess_input(input_dict, windows_length):
-    """
-    process the Action Start windows and non-Action Start windows
-    input:
-        input_dict: the dictionary of input data (train or val)
-        windows_length: the length of the windows (16)
-    return:
-        the list of AS windows and non-AS windows
-    """
-    N_instance = 0
-    AS_windows = [] #Action Start windows, the first frame number of the AS windows
-    non_AS_windows = []
-
-    for videoName, video in input_dict.items():
-        N_instance += len(video['frameStamp']) # the number of action instances 
-        N_frames_of_video = video['totFrames'] # the number of frames of each video
-        leading_frame_of_last_window = N_frames_of_video - windows_length - windows_length # sub 2 window_length => 1 for s_window, 1 for f_window
-        exclusive = []
-        #Action Start windows
-        for instance in video['frameStamp']:
-            start_frame = instance[0]
-            end_frame = instance[1]
-            instance_label = instance[2]
-            #action start(background + action)
-            for n in range(max(start_frame - windows_length + 1 ,0), min(start_frame + 1 ,leading_frame_of_last_window)): #each start frame exist in 'windows_length' windows
-                follow_start_frame = n + windows_length
-                follow_instance_label = instance_label if (follow_start_frame+windows_length -1 ) <= end_frame else 0
-                AS_windows.append([videoName, n, instance_label, follow_start_frame, follow_instance_label])#
-                exclusive.append(n)
-            #only action ,min(a,leading_frame_of_last_window)=> the annotation is out of range,
-            for n in range(start_frame +1 , min(end_frame-windows_length +1,leading_frame_of_last_window)):
-                follow_non_start_frame = n + windows_length
-                follow_instance_label = instance_label if (follow_non_start_frame+windows_length -1 ) <= end_frame else 0
-                non_AS_windows.append([videoName, n, instance_label, follow_non_start_frame, follow_instance_label]) #
-                exclusive.append(n)
-        
-        #non-Action Start windows
-        for n in range(leading_frame_of_last_window):
-            if n in exclusive:
-                continue
-            non_AS_windows.append([videoName, n, 0, n+windows_length, 0]) # TODO
-
-    random.shuffle(AS_windows)
-    random.shuffle(non_AS_windows)
-    return AS_windows, non_AS_windows
 
 def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isTrain=True):
     """
@@ -184,19 +138,24 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
     """
     batch_size_AS = batch_size>>1
     batch_size_non_AS = batch_size - batch_size_AS
-    # print(AS_windows[:10])
-    # print(non_AS_windows[:10])
+    random.shuffle(AS_windows)
+    random.shuffle(non_AS_windows)
     while True:
         for i in range(N_iterations):
             a_AS = i*batch_size_AS
             b_AS = (i+1)*batch_size_AS
             a_non_AS = i*batch_size_non_AS
             b_non_AS = (i+1)*batch_size_non_AS
-
-            X_s, X_f, X_s_labels = process_batch(AS_windows[a_AS:b_AS] + non_AS_windows[a_non_AS:b_non_AS], windows_length, img_path, train=isTrain)
             
-            X_s = preprocess(X_s)
-            X_f = preprocess(X_f)
+            batch_windows = AS_windows[a_AS:b_AS] + non_AS_windows[a_non_AS:b_non_AS]
+            random.shuffle(batch_windows)
+            
+            X_s, X_f, X_s_labels = process_batch(batch_windows, windows_length, img_path, train=isTrain)
+            
+            # X_s = preprocess(X_s)
+            # X_f = preprocess(X_f)
+            X_s = np_utils.normalize(X_s)
+            X_f = np_utils.normalize(X_f)
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
             # X_s = np.transpose(X_s, (0,2,3,1,4))
             # X_f = np.transpose(X_f, (0,2,3,1,4))
@@ -206,18 +165,11 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
 
 
 def main():
-    import constantPaths as path    
+    from data import videoPaths as path    
     img_path = path.VALIDATION_IMAGES_PATH
-    train_file = 'data/train.json'
-    val_file = 'data/validation.json'
 
-    with open(train_file) as f:
-        train_anno = json.load(f)
-    with open(val_file) as f:
-        val_anno = json.load(f)
-  
     N_classes = 20+1
-    batch_size = 2#16
+    batch_size = 16#16
     epochs = 2
     input_shape = (16,112,112,3)
     windows_length = 16
@@ -230,21 +182,31 @@ def main():
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.summary()
 
-####################################   
-    # a=batch_generator(train_anno, windows_length, batch_size, N_classes,img_path,isTrain=True)
-    # next(a)
-    # print(len(a))
-    # test_data, y = next(a)
-    # print(len(test_data))
-    # print(len(y))
-##################################
-    train_AS_windows, train_non_AS_windows = preprocess_input(train_anno, windows_length)
-    N_train_samples = len(train_AS_windows) << 1 # half AS, half non-AS
-    N_train_iterations = N_train_samples // batch_size
-    val_AS_windows, val_non_AS_windows = preprocess_input(val_anno, windows_length)
+    from dataUtil import load_train_data, load_val_data
+    train_AS_windows, train_non_AS_windows = load_train_data() # load train data
+    N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
+    N_train_iterations = N_train_samples // batch_size 
+
+    val_AS_windows, val_non_AS_windows = load_val_data() # load val data
     N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
-
+# ####################################   
+#     print(len(train_AS_windows))
+#     print(len(train_non_AS_windows))
+#     print(len(val_AS_windows))
+#     print(len(val_non_AS_windows))
+#     # a=batch_generator(train_AS_windows, train_non_AS_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
+#     # next(a)
+#     # test_data, y = next(a)
+#     # print(len(test_data))
+#     # print(len(y))
+#     # print(test_data[0])
+#     # print(test_data.shape)
+#     # print(test_data[0].shape)
+#     # util.show_images(test_data[0])
+#     # plt.imshow(test_data[0])
+#     # plt.show()
+# ##################################
     history = model.fit_generator(batch_generator(train_AS_windows, train_non_AS_windows, 
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True),
                                   steps_per_epoch= N_train_iterations,

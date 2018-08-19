@@ -86,7 +86,7 @@ class myThread (threading.Thread):
         print ("Exiting " + self.name)
 
 # print(train_AS_windows[:10])
-N_thread = 10
+N_thread = 1
 N = len(train_non_AS_windows)//N_thread +1
 print(len(train_non_AS_windows[0:N]))
 threads = list()
