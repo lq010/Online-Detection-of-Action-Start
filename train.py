@@ -169,7 +169,7 @@ def main():
     img_path = path.VALIDATION_IMAGES_PATH
 
     N_classes = 20+1
-    batch_size = 16#16
+    batch_size = 2#16
     epochs = 2
     input_shape = (16,112,112,3)
     windows_length = 16
