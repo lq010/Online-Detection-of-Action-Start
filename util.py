@@ -52,8 +52,49 @@ def get_num_frames_and_duration(video_path):
 
 
 
-# '''
-# if __name__ == '__main__':
+
+
+
+def send_email():
+   # import necessary packages
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    import smtplib
+    
+    # create message object instance
+    msg = MIMEMultipart()
+      
+    message = "AWS done"
+    
+    # setup the parameters of the message
+    with open('password.txt') as p:
+        password = p.read()
+        print(password)
+    msg['From'] = "justforl2.club@gmail.com"
+    msg['To'] = "leiqing010@gmail.com"
+    msg['Subject'] = "AWS traing done"
+    
+    # add in the message body
+    msg.attach(MIMEText(message, 'plain'))
+    
+    #create server
+    server = smtplib.SMTP('smtp.gmail.com: 587')
+    
+    server.starttls()
+    
+    # Login Credentials for sending the mail
+    server.login(msg['From'], password)
+    
+    
+    # send the message via the server.
+    server.sendmail(msg['From'], msg['To'], msg.as_string())
+    
+    server.quit()
+    
+    print ("successfully sent email to %s:" % (msg['To']))
+
+if __name__ == '__main__':
+    send_email()
 #     path = "/media/lq/C13E-1ED0/dataset/THUMOS/validation/"
 #     #print(get_num_frames(path))
 #     videos = os.listdir(path)

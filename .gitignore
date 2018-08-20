@@ -1,8 +1,9 @@
 
-
+password.txt
 result/
 data/train_windows.pickle
 data/val_windows.pickle
+data/conv3d_deepnetA_sport1m_iter_1900000_TF.model
 # Created by https://www.gitignore.io/api/macos,linux,python,pycharm,visualstudiocode
 
 ### Linux ###

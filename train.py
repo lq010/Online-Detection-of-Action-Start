@@ -169,8 +169,8 @@ def main():
     img_path = path.VALIDATION_IMAGES_PATH
 
     N_classes = 20+1
-    batch_size = 2#16
-    epochs = 2
+    batch_size = 16
+    epochs = 10
     input_shape = (16,112,112,3)
     windows_length = 16
 
@@ -181,7 +181,6 @@ def main():
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.summary()
-
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_non_AS_windows = load_train_data() # load train data
     N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
@@ -215,7 +214,7 @@ def main():
                                   validation_data=batch_generator(val_AS_windows, val_non_AS_windows, 
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path, isTrain=False),
                                   validation_steps= N_val_iterations,
-                                  verbose=1)
+                                  verbose=2)
 
     if not os.path.exists('results/'):
         os.mkdir('results/')
