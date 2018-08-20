@@ -1,4 +1,5 @@
 
+nohup.out
 password.txt
 results/
 data/train_windows.pickle
