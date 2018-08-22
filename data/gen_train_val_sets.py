@@ -21,11 +21,11 @@ files.remove('Ambiguous_val.txt')
 val_split = {'train': 0.8, 'val': 0.2}
 trian_data = dict()
 val_data = dict()
-class_index = dict()
 
 """###################################
 class index dictionary
 """
+class_index = dict()
 index_file = open('Class Index_Detection.txt','r')
 lines = index_file.readlines()
 for line in lines:
