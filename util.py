@@ -1,4 +1,4 @@
-import keras.backend as K
+# import keras.backend as K
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,45 +56,16 @@ def get_num_frames_and_duration(video_path):
 
 
 def send_email():
-   # import necessary packages
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
     import smtplib
-    
-    # create message object instance
-    msg = MIMEMultipart()
-      
-    message = "AWS done"
-    
-    # setup the parameters of the message
-    with open('password.txt') as p:
-        password = p.read()
-        print(password)
-    msg['From'] = "justforl2.club@gmail.com"
-    msg['To'] = "leiqing010@gmail.com"
-    msg['Subject'] = "AWS traing done"
-    
-    # add in the message body
-    msg.attach(MIMEText(message, 'plain'))
-    
-    #create server
-    server = smtplib.SMTP('smtp.gmail.com: 587')
-    
-    server.starttls()
-    
-    # Login Credentials for sending the mail
-    server.login(msg['From'], password)
-    
-    
-    # send the message via the server.
-    server.sendmail(msg['From'], msg['To'], msg.as_string())
-    
-    server.quit()
-    
-    print ("successfully sent email to %s:" % (msg['To']))
+    s = smtplib.SMTP()
+    s.connect('email-smtp.us-east-1.amazonaws.com',587)
+    s.starttls()
+    s.login('AKIAIUGDLV2UKFNAFWRQ','Ar72Lr7OrHj/ICxEi9k+n40JvxjTaj9ZPG6EF9klGF+G')
+    msg = 'FROM:justforl2.club@gmail.com\nTo: leiqing010@gmail.com\nSubject:Finish\n\nAWS done!'
+    s.sendmail('justforl2.club@gmail.com', 'leiqing010@gmail.com',msg)
 
 if __name__ == '__main__':
-    send_email()
+    # send_email()
 #     path = "/media/lq/C13E-1ED0/dataset/THUMOS/validation/"
 #     #print(get_num_frames(path))
 #     videos = os.listdir(path)

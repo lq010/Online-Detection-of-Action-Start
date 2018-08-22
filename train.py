@@ -225,4 +225,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    util.send_email()
+    # util.send_email()
