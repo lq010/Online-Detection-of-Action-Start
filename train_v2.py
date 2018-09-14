@@ -168,6 +168,10 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
             # yield inputs, Y
             yield X_s, Y
 
+# placeholder loss
+def zero_loss(y_true, y_pred):
+    return K.zeros_like(y_pred)
+
 
 def main():
     from data import videoPaths as path    
@@ -186,7 +190,7 @@ def main():
     #sgd = SGD(lr=lr, momentum=0.9, nesterov=True)
     adam = Adam(lr=lr)
 
-    model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
+    model.compile(loss=['categorical_crossentropy',zero_loss], loss_weights = [1,0.1], optimizer=adam, metrics=['accuracy'])
     model.summary()
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_non_AS_windows = load_train_data() # load train data

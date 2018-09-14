@@ -1,8 +1,27 @@
-from keras.layers import Dense,Dropout,Conv3D,Input,MaxPool3D,Flatten,Activation,TimeDistributed,Permute,merge,Conv2D
+from keras.layers import Dense,Dropout,Conv3D,Input,MaxPool3D,Flatten,Activation,TimeDistributed,Permute,merge,Conv2D, Layer
 from keras.layers.convolutional import ZeroPadding3D
 from keras.regularizers import l2
 from keras.models import Model
+import keras.backend as K
+import tensorflow as tf
 
+# Custom loss layer
+class CustomVariationalLayer(Layer):
+    def __init__(self, **kwargs):
+        self.is_placeholder = True
+        super(CustomVariationalLayer, self).__init__(**kwargs)
+
+    def myl2_loss(self, x_s, x_f):
+        x = x_s - x_f
+        return tf.nn.l2_loss(x)
+
+    def call(self, inputs):
+        x_s = inputs[0]
+        x_f = inputs[1]
+        loss = self.myl2_loss(x_s, x_f)
+        self.add_loss(loss, inputs=inputs)
+        # we don't use this output, but it has to have the correct shape:
+        return K.ones_like(x_s)
 
 nb_classes = 20+1
 dropout_ratio = 0.5
@@ -93,22 +112,28 @@ def c3d_model(input_shape):
 
     # define the input placeholder as a tensor with shape input_shape. 
     X_s_input = Input(input_shape, name = 'input_s')
-    # X_f_input = Input(input_shape, name = 'input_f')
+    X_f_input = Input(input_shape, name = 'input_f')
 
     x_s_7 = conv_fc7(X_s_input)
-    # x_f_7 = conv_fc7(X_f_input)
+    x_f_7 = conv_fc7(X_f_input)
  
     #FC8
-    x_s = Dense(nb_classes, name = 'fc_8')(x_s_7)
-    # x_s = Activation('softmax', name='softmax_8')(x_s)
+    x_s = Dense(nb_classes,activation='softmax', name = 'fc8')(x_s_7)
+    
 
-    # x_s_7,x_f_7
+    loss_layer = CustomVariationalLayer()([x_s_7, x_f_7])
 
-    # model = Model(inputs = [X_s_input, X_f_input], outputs = [x_s, x_s_7, x_f_7])
-    model = Model(inputs = X_s_input, outputs = x_s)
+    model = Model(inputs = [X_s_input, X_f_input], outputs = [x_s,loss_layer])
     return model
     
 if __name__ == '__main__':
     X_s_input = Input(input_shape)
     model = c3d_model(input_shape)
     model.summary()
+    from keras.utils import plot_model
+    plot_model(model, to_file='model.png')
+
+    from IPython.display import SVG
+    from keras.utils.vis_utils import model_to_dot
+
+    SVG(model_to_dot(model).create(prog='dot', format='svg'))
