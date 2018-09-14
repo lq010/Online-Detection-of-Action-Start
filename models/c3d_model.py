@@ -39,7 +39,7 @@ def get_model(s = False, backend = 'tf'):
                             padding='same', name='conv5a')(x)
     x = Convolution3D(512, (3, 3, 3), activation='relu',
                             padding='same', name='conv5b')(x)
-    x = ZeroPadding3D(padding=((0, 0), (0, 1), (0, 1)), name='zeropad5')(x)
+    #x = ZeroPadding3D(padding=((0, 0), (0, 1), (0, 1)), name='zeropad5')(x)
     x = MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2),
                            padding='valid', name='pool5')(x)
     x = Flatten()(x)
@@ -57,3 +57,5 @@ def get_model(s = False, backend = 'tf'):
 if __name__ == '__main__':
     model = get_model()
     model.summary()
+    from keras.utils import plot_model
+    plot_model(model, to_file='model_v2.png', show_shapes=True)

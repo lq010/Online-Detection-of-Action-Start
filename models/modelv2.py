@@ -85,7 +85,7 @@ def conv_fc7(X_input):
     #layer Conv5
     x = Conv5a(x)
     x = Conv5b(x)
-    x = zPadding5(x)
+    #x = zPadding5(x)
     x = Pool5(x)
     x = Flatten5(x)
 
@@ -131,9 +131,4 @@ if __name__ == '__main__':
     model = c3d_model(input_shape)
     model.summary()
     from keras.utils import plot_model
-    plot_model(model, to_file='model.png')
-
-    from IPython.display import SVG
-    from keras.utils.vis_utils import model_to_dot
-
-    SVG(model_to_dot(model).create(prog='dot', format='svg'))
+    plot_model(model, to_file='model_v2+l2.png', show_shapes=True)

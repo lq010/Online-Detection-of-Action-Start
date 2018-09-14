@@ -67,3 +67,5 @@ if __name__ == '__main__':
     
     model = c3d_model(input_shape)
     model.summary()
+    from keras.utils import plot_model
+    plot_model(model, to_file='model_v1.png', show_shapes=True)
