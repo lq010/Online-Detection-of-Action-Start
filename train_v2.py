@@ -164,9 +164,9 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
             X_f /=255.
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
             
-            # inputs = [X_s, X_f]
-            # yield inputs, Y
-            yield X_s, Y
+            inputs = [X_s, X_f]
+            yield inputs, Y
+            # yield X_s, Y
 
 # placeholder loss
 def zero_loss(y_true, y_pred):
@@ -177,7 +177,7 @@ def main():
     from data import videoPaths as path    
     img_path = path.VALIDATION_IMAGES_PATH
 
-    # use_cpu()
+    use_cpu()
 
     N_classes = 20+1
     batch_size = 16
