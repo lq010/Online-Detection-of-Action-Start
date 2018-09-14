@@ -124,6 +124,7 @@ def c3d_model(input_shape):
     loss_layer = CustomVariationalLayer()([x_s_7, x_f_7])
 
     model = Model(inputs = [X_s_input, X_f_input], outputs = [x_s,loss_layer])
+    # model = Model(inputs = X_s_input, outputs = [x_s,loss_layer])
     return model
     
 if __name__ == '__main__':

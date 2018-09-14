@@ -121,19 +121,6 @@ def process_batch(windows, windows_length, img_path, train=True):
     return X_s, X_f,  X_s_labels
 
 
-def preprocess(inputs):
-    inputs[..., 0] -= 99.9
-    inputs[..., 1] -= 92.1
-    inputs[..., 2] -= 82.6
-    inputs[..., 0] /= 65.8
-    inputs[..., 1] /= 62.3
-    inputs[..., 2] /= 60.3
-    # inputs /=255.
-    # inputs -= 0.5
-    # inputs *=2.
-    return inputs
-
-
 def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isTrain=True):
     """
     input data generator
@@ -153,24 +140,13 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
             random.shuffle(batch_windows)
             
             X_s, X_f, X_s_labels = process_batch(batch_windows, windows_length, img_path, train=isTrain)
-            
-            # X_s = preprocess(X_s)
-            # X_f = preprocess(X_f)
-            X_s = np_utils.normalize(X_s)
-            X_f = np_utils.normalize(X_f)
+
+            X_s /= X_s
+            X_f /= X_f
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
-            # X_s = np.transpose(X_s, (0,2,3,1,4))
-            # X_f = np.transpose(X_f, (0,2,3,1,4))
             yield X_s, Y
             # yield X_s, X_f, Y
 
-# def custom_loss(y_true, y_pred):
-#     '''Just another crossentropy'''
-#     K.categorical_crossentropy()
-#     y_pred = T.clip(y_pred, epsilon, 1.0 - epsilon)
-#     y_pred /= y_pred.sum(axis=-1, keepdims=True)
-#     cce = T.nnet.categorical_crossentropy(y_pred, y_true)
-#     return cce
 
 def main():
     from data import videoPaths as path    
