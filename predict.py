@@ -55,17 +55,14 @@ def main():
                 # inputs = np.transpose(inputs, (0, 2, 3, 1, 4))
                 pred = model.predict(inputs)
                 print(pred)
-                print(np.argmax(pred[0]))
-                print('{}:{}'.format(np.argmax(pred[0]),np.max(pred[0])))
-                print('frame = ' + str(counter))
                 label = np.argmax(pred[0])
-                print(class_index[label])
-            #     cv2.putText(frame, class_index[label], (20, 20),
-            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-            #                 (0, 0, 255), 1)
-            #     cv2.putText(frame, "prob: %.4f" % pred[0][label], (20, 40),
-            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-            #                 (0, 0, 255), 1)
+                print('#############' + str(label))
+                cv2.putText(frame, class_index[label], (20, 20),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                            (0, 0, 255), 1)
+                cv2.putText(frame, "prob: %.4f" % pred[0][label], (20, 40),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                            (0, 0, 255), 1)
                 clip.pop(0)
             # cv2.imshow('result', frame)
             # cv2.waitKey(10)

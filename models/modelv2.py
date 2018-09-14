@@ -93,18 +93,19 @@ def c3d_model(input_shape):
 
     # define the input placeholder as a tensor with shape input_shape. 
     X_s_input = Input(input_shape, name = 'input_s')
-    X_f_input = Input(input_shape, name = 'input_f')
+    # X_f_input = Input(input_shape, name = 'input_f')
 
     x_s_7 = conv_fc7(X_s_input)
-    x_f_7 = conv_fc7(X_f_input)
+    # x_f_7 = conv_fc7(X_f_input)
  
     #FC8
     x_s = Dense(nb_classes, name = 'fc_8')(x_s_7)
-    x_s = Activation('softmax', name='softmax_8')(x_s)
+    # x_s = Activation('softmax', name='softmax_8')(x_s)
 
     # x_s_7,x_f_7
 
-    model = Model(inputs = [X_s_input, X_f_input], outputs = [x_s, x_s_7, x_f_7])
+    # model = Model(inputs = [X_s_input, X_f_input], outputs = [x_s, x_s_7, x_f_7])
+    model = Model(inputs = X_s_input, outputs = x_s)
     return model
     
 if __name__ == '__main__':
