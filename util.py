@@ -64,7 +64,7 @@ def send_email():
     msg = 'FROM:justforl2.club@gmail.com\nTo: leiqing010@gmail.com\nSubject:Finish\n\nAWS done!'
     s.sendmail('justforl2.club@gmail.com', 'leiqing010@gmail.com',msg)
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # send_email()
 #     path = "/media/lq/C13E-1ED0/dataset/THUMOS/validation/"
 #     #print(get_num_frames(path))

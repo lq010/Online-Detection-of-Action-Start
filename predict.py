@@ -1,6 +1,7 @@
 # coding=utf8
 from models.model import c3d_model
-from keras.optimizers import SGD
+from keras.optimizers import SGD,Adam
+import keras.backend as K
 from keras.utils import np_utils
 import numpy as np
 import cv2
@@ -17,6 +18,7 @@ for line in lines:
     class_index[int(item[2])] = item[1]
 index_file.close()
 
+print(class_index)
 def main():
 
     input_shape = (16,112,112,3)
@@ -26,45 +28,47 @@ def main():
     # init model
     model = c3d_model(input_shape)
     lr = 0.005
-    sgd = SGD(lr=lr, momentum=0.9, nesterov=True)
-    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+    adam = Adam(lr=lr)
+    model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.summary()
-    model.load_weights('results/weights_c3d.h5', by_name=True)
+    model.load_weights('results/weights_c3d.h5')
 
     # read video
-    video = 'videos/video_test_0000367.mp4'
+    video = 'videos/video_test_0000007.mp4'
     cap = cv2.VideoCapture(video)
 
     clip = []
+    counter = 0 
     while True:
         ret, frame = cap.read()
+        counter += 1
+        if counter < 8250:
+            continue
         if ret:
             tmp = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             clip.append(cv2.resize(tmp, (171, 128)))
             if len(clip) == 16:
                 inputs = np.array(clip).astype(np.float32)
                 inputs = np.expand_dims(inputs, axis=0)
-                # inputs[..., 0] -= 99.9
-                # inputs[..., 1] -= 92.1
-                # inputs[..., 2] -= 82.6
-                # inputs[..., 0] /= 65.8
-                # inputs[..., 1] /= 62.3
-                # inputs[..., 2] /= 60.3
                 inputs = np_utils.normalize(inputs)
                 inputs = inputs[:,:,8:120,30:142,:]
                 # inputs = np.transpose(inputs, (0, 2, 3, 1, 4))
                 pred = model.predict(inputs)
+                print(pred)
+                print(np.argmax(pred[0]))
+                print('{}:{}'.format(np.argmax(pred[0]),np.max(pred[0])))
+                print('frame = ' + str(counter))
                 label = np.argmax(pred[0])
-                
-                cv2.putText(frame, class_index[label].split(' ')[-1].strip(), (20, 20),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                            (0, 0, 255), 1)
-                cv2.putText(frame, "prob: %.4f" % pred[0][label], (20, 40),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                            (0, 0, 255), 1)
+                print(class_index[label])
+            #     cv2.putText(frame, class_index[label], (20, 20),
+            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+            #                 (0, 0, 255), 1)
+            #     cv2.putText(frame, "prob: %.4f" % pred[0][label], (20, 40),
+            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+            #                 (0, 0, 255), 1)
                 clip.pop(0)
-            cv2.imshow('result', frame)
-            cv2.waitKey(10)
+            # cv2.imshow('result', frame)
+            # cv2.waitKey(10)
         else:
             break
     cap.release()

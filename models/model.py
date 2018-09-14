@@ -60,3 +60,10 @@ def c3d_model(input_shape):
 
     model = Model(X_input, x)
     return model
+if __name__ == '__main__':
+
+    input_shape = (16,112,112,3)
+    X_s_input = Input(input_shape)
+    
+    model = c3d_model(input_shape)
+    model.summary()

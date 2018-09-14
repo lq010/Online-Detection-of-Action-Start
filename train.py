@@ -4,13 +4,14 @@ import sys
 import os
 from models.model import c3d_model
 from keras.optimizers import SGD,Adam
+import keras.backend as K
 from keras.utils import np_utils
 from schedules import onetenth_4_8_12
 import numpy as np
 import random
 import cv2
 import matplotlib
-# matplotlib.use('AGG')
+matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import util
 
@@ -162,7 +163,13 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
             yield X_s, Y
             # yield X_s, X_f, Y
 
-
+def custom_loss(y_true, y_pred):
+    '''Just another crossentropy'''
+    K.categorical_crossentropy()
+    y_pred = T.clip(y_pred, epsilon, 1.0 - epsilon)
+    y_pred /= y_pred.sum(axis=-1, keepdims=True)
+    cce = T.nnet.categorical_crossentropy(y_pred, y_true)
+    return cce
 
 def main():
     from data import videoPaths as path    
@@ -226,3 +233,4 @@ def main():
 if __name__ == '__main__':
     main()
     # util.send_email()
+    # loss = sum( [ loss_function( output_true, output_pred ) for ( output_true, output_pred ) in zip( outputs_data, outputs_model ) ] )
