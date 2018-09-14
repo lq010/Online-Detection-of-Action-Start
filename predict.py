@@ -1,6 +1,6 @@
 # coding=utf8
 from models.model import c3d_model
-from keras.optimizers import SGD
+from keras.optimizers import SGD,Adam
 from keras.utils import np_utils
 import numpy as np
 import cv2
@@ -17,6 +17,7 @@ for line in lines:
     class_index[int(item[2])] = item[1]
 index_file.close()
 
+print(class_index)
 def main():
 
     input_shape = (16,112,112,3)
@@ -26,13 +27,15 @@ def main():
     # init model
     model = c3d_model(input_shape)
     lr = 0.005
-    sgd = SGD(lr=lr, momentum=0.9, nesterov=True)
-    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+    adam = Adam(lr=lr)
+
+    model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.summary()
-    model.load_weights('results/weights_c3d.h5', by_name=True)
+    model.load_weights('results/weights_c3d_1.h5', by_name=True)
 
     # read video
-    video = 'videos/video_test_0000367.mp4'
+    # video = '/media/lq/C13E-1ED0/dataset/THUMOS/test/video_test_0000004.mp4'
+    video = '/media/lq/C13E-1ED0/dataset/THUMOS/validation/video_validation_0000053.mp4'
     cap = cv2.VideoCapture(video)
 
     clip = []
@@ -54,9 +57,10 @@ def main():
                 inputs = inputs[:,:,8:120,30:142,:]
                 # inputs = np.transpose(inputs, (0, 2, 3, 1, 4))
                 pred = model.predict(inputs)
+                print(pred)
                 label = np.argmax(pred[0])
-                
-                cv2.putText(frame, class_index[label].split(' ')[-1].strip(), (20, 20),
+                print('#############' + str(label))
+                cv2.putText(frame, class_index[label], (20, 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                             (0, 0, 255), 1)
                 cv2.putText(frame, "prob: %.4f" % pred[0][label], (20, 40),

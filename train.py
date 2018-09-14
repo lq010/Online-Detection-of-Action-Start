@@ -214,7 +214,7 @@ def main():
                                   validation_data=batch_generator(val_AS_windows, val_non_AS_windows, 
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path, isTrain=False),
                                   validation_steps= N_val_iterations,
-                                  verbose=2)
+                                  verbose=1)
 
     if not os.path.exists('results/'):
         os.mkdir('results/')
