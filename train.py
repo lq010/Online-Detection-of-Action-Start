@@ -1,8 +1,9 @@
 # -*- coding:utf-8 -*-
+import argparse
 import json
 import sys
 import os
-from models.model import c3d_model
+from models import c3d_model
 from keras.optimizers import SGD,Adam
 import keras.backend as K
 from keras.utils import np_utils
@@ -141,29 +142,49 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
             
             X_s, X_f, X_s_labels = process_batch(batch_windows, windows_length, img_path, train=isTrain)
 
-            X_s /= X_s
-            X_f /= X_f
+            X_s /= 255.
+            X_f /= 255.
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
             yield X_s, Y
             # yield X_s, X_f, Y
 
 
-def main():
+def main(force_cpu):
     from data import videoPaths as path    
     img_path = path.VALIDATION_IMAGES_PATH
+    weights_dir = './weight'
+    model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
+
+    if(force_cpu):
+        util.force_cpu()
 
     N_classes = 20+1
-    batch_size = 2#16
+    batch_size = 16
     epochs = 16
     input_shape = (16,112,112,3)
     windows_length = 16
 
-    model = c3d_model(input_shape)
+    model = c3d_model.get_model(input_shape)
     lr = 0.0001
     #sgd = SGD(lr=lr, momentum=0.9, nesterov=True)
     adam = Adam(lr=lr)
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
+    model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
+######################    
+    # for layer in model.layers:
+    #     weights = layer.get_weights()
+       
+    #     print(layer)
+
+    # l = model.get_layer(name='fc8')
+    # list = l.get_weights()
+    # for l in list:
+    #     print(l.shape)
+    #     print(l[10])
+    # return 0
+#####################
+
     model.summary()
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_non_AS_windows = load_train_data() # load train data
@@ -208,6 +229,17 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Train the model ')
+
+    parser.add_argument(
+        '-c','--cpu',
+        dest='force_cpu',
+        action='store_true',
+        default = False,
+        help='Force Keras to use CPU (debug)')
+
+    args = parser.parse_args()
+    main(args.force_cpu)
+
     # util.send_email()
     # loss = sum( [ loss_function( output_true, output_pred ) for ( output_true, output_pred ) in zip( outputs_data, outputs_model ) ] )

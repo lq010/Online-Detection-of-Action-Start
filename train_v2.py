@@ -1,8 +1,11 @@
 # -*- coding:utf-8 -*-
+import argparse
 import json
 import sys
 import os
 from models.modelv2 import c3d_model
+from data import videoPaths as path
+
 from keras.optimizers import SGD,Adam
 import keras.backend as K
 from keras.utils import np_utils
@@ -15,24 +18,6 @@ matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import util
 
-def use_cpu():
-    import tensorflow as tf
-    from keras import backend as K
-
-    num_cores = 8
-
-    # if GPU:
-    #     num_GPU = 1
-    #     num_CPU = 1
-    # if CPU:
-    num_CPU = 1
-    num_GPU = 0
-
-    config = tf.ConfigProto(intra_op_parallelism_threads=num_cores,\
-            inter_op_parallelism_threads=num_cores, allow_soft_placement=True,\
-            device_count = {'CPU' : num_CPU, 'GPU' : num_GPU})
-    session = tf.Session(config=config)
-    K.set_session(session)
 
 def plot_history(history, result_dir):
     plt.plot(history.history['acc'], marker='.')
@@ -174,13 +159,15 @@ def zero_loss(y_true, y_pred):
 
 
 def main():
-    from data import videoPaths as path    
+        
     img_path = path.VALIDATION_IMAGES_PATH
+    weights_dir = './weight'
+    model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
 
     use_cpu()
 
     N_classes = 20+1
-    batch_size = 16
+    batch_size = 2#16
     epochs = 16
     input_shape = (16,112,112,3)
     windows_length = 16
@@ -191,7 +178,9 @@ def main():
     adam = Adam(lr=lr)
 
     model.compile(loss=['categorical_crossentropy',zero_loss], loss_weights = [1,0.1], optimizer=adam, metrics=['accuracy'])
+    model.load_weights(model_weight_filename,reshape=True)
     model.summary()
+    return 0
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_non_AS_windows = load_train_data() # load train data
     N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
@@ -237,6 +226,15 @@ def main():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Train the model ')
+
+    parser.add_argument(
+        '--id',
+        dest='experiment_id',
+        default=0,
+        help='Experiment ID to track and not overwrite resulting models')
+
+
     main()
     # util.send_email()
     # loss = sum( [ loss_function( output_true, output_pred ) for ( output_true, output_pred ) in zip( outputs_data, outputs_model ) ] )
