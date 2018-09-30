@@ -45,7 +45,7 @@ video_validation_0000856  19.9 21.4
 video_validation_0000856  56.6 61.1
 video_validation_0000856  63.7 65.0
 video_validation_0000856  84.3 85.5
-video_validation_0000856  python85.9 91.5
+video_validation_0000856  85.9 91.5
 video_validation_0000856  8.5 10.0
 video_validation_0000856  35.2 38.9
 video_validation_0000856  70.4 71.3

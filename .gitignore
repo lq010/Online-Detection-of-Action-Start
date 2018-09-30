@@ -4,7 +4,7 @@ videos/*
 nohup.out
 password.txt
 result/
-weight
+weight/*.h5
 data/train_windows.pickle
 data/val_windows.pickle
 data/conv3d_deepnetA_sport1m_iter_1900000_TF.model

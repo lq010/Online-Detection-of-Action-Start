@@ -4,7 +4,6 @@ import json
 import sys
 import os
 from models import c3d_model
-from keras.optimizers import SGD,Adam
 import keras.backend as K
 from keras.utils import np_utils
 from schedules import onetenth_4_8_12
@@ -16,7 +15,9 @@ matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import util
 
+from my_callbacks import LearningRateTracker
 
+from LR_Adam import Adam
 
 def plot_history(history, result_dir):
     plt.plot(history.history['acc'], marker='.')
@@ -156,7 +157,10 @@ def main(force_cpu):
     model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
 
     if(force_cpu):
+        print('using CPU')
         util.force_cpu()
+    else:
+        print('using GPU')
 
     N_classes = 20+1
     batch_size = 16
@@ -165,9 +169,24 @@ def main(force_cpu):
     windows_length = 16
 
     model = c3d_model.get_model(input_shape)
-    lr = 0.0001
-    #sgd = SGD(lr=lr, momentum=0.9, nesterov=True)
-    adam = Adam(lr=lr)
+    
+    # Setting the Learning rate multipliers
+    LR_mult_dict = {}
+    LR_mult_dict['conv1']=1
+    LR_mult_dict['conv2']=1
+    LR_mult_dict['conv3a']=1
+    LR_mult_dict['conv3b']=1
+    LR_mult_dict['conv4a']=1
+    LR_mult_dict['conv4b']=1
+    LR_mult_dict['conv5a']=1
+    LR_mult_dict['conv5b']=1
+    LR_mult_dict['fc6']=1
+    LR_mult_dict['fc7']=1
+    LR_mult_dict['fc8']=10
+
+    # Setting up optimizer
+    base_lr = 0.00001
+    adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
@@ -195,30 +214,28 @@ def main(force_cpu):
     N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
-#     print(len(train_AS_windows))
-#     print(len(train_non_AS_windows))
-#     print(len(val_AS_windows))
-#     print(len(val_non_AS_windows))
-#     # a=batch_generator(train_AS_windows, train_non_AS_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
-#     # next(a)
-#     # test_data, y = next(a)
-#     # print(len(test_data))
-#     # print(len(y))
-#     # print(test_data[0])
-#     # print(test_data.shape)
-#     # print(test_data[0].shape)
-#     # util.show_images(test_data[0])
-#     # plt.imshow(test_data[0])
-#     # plt.show()
+    print("#train samples:" + str(N_train_samples) +" --#train AS windows: "+ str(len(train_AS_windows)) +" #train non_AS windows: "+str(len(train_non_AS_windows)))
+    print("#val samples:" + str(N_val_samples) +" --#val AS windows: "+ str(len(val_AS_windows)) + " #val non_AS windows: "+ str(len(val_non_AS_windows)))
+    # a=batch_generator(train_AS_windows, train_non_AS_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
+    # next(a)
+    # test_data, y = next(a)
+    # print(len(test_data))
+    # print(len(y))
+    # print(test_data[0])
+    # print(test_data.shape)
+    # print(test_data[0].shape)
+    # util.show_images(test_data[0])
+    # plt.imshow(test_data[0])
+    # plt.show()
 # ##################################
+
     history = model.fit_generator(batch_generator(train_AS_windows, train_non_AS_windows, 
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True),
-                                  steps_per_epoch= N_train_iterations,
-                                  epochs=epochs,
-                                  callbacks=[onetenth_4_8_12(lr)],
-                                  validation_data=batch_generator(val_AS_windows, val_non_AS_windows, 
+                                  steps_per_epoch = N_train_iterations,
+                                  epochs = epochs,
+                                  validation_data = batch_generator(val_AS_windows, val_non_AS_windows, 
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path, isTrain=False),
-                                  validation_steps= N_val_iterations,
+                                  validation_steps = N_val_iterations,
                                   verbose=1)
 
     if not os.path.exists('results/'):

@@ -3,6 +3,7 @@ from keras.callbacks import Callback, ModelCheckpoint
 import yaml
 import h5py
 import numpy as np
+import tensorflow as tf
 
 class Step(Callback):
 
@@ -104,3 +105,32 @@ class MetaCheckpoint(ModelCheckpoint):
                                           data=np.array(self.meta['epochs']))
                 for k in logs:
                     meta_group.create_dataset(k, data=np.array(self.meta[k]))
+
+
+class LearningRateTracker(Callback):
+    def on_batch_end(self, epoch, logs={}):
+        optimizer = self.model.optimizer
+        _lr = tf.to_float(optimizer.lr, name='ToFloat')
+        _decay = tf.to_float(optimizer.decay, name='ToFloat')
+        _iter = tf.to_float(optimizer.iterations, name='ToFloat')
+        iter = K.eval(_iter)
+        decay = K.eval(_decay)
+        lr = K.eval(_lr)
+        print('end --iter {:f} -decay{:f} -LR: {:.6f} \n'.format(iter, decay, lr))
+		
+
+    def on_epoch_begin(self, epoch, logs={}):
+        optimizer = self.model.optimizer
+        _lr = tf.to_float(optimizer.lr, name='ToFloat')
+        _decay = tf.to_float(optimizer.decay, name='ToFloat')
+        _iter = tf.to_float(optimizer.iterations, name='ToFloat')
+        iter = K.eval(_iter)
+        decay = K.eval(_decay)
+        lr = K.eval(_lr)
+        print(optimizer.lr_multipliers)
+        print('&&LR history:')
+        print(optimizer.lrHistory)
+        for key, val in optimizer.lrHistory.items():
+            _val = tf.to_float(val, name ='ToFloat')
+            print(key + ':' + str(K.eval(_val)))
+        # print('begin --iter {:f} -decay{:f} -LR: {:.6f}\n'.format(iter, decay, lr))
