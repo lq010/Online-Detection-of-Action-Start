@@ -56,7 +56,7 @@ def save_history(history, result_dir):
         fp.close()
 
         
-def process_batch(windows, windows_length, img_path, train=True):
+def process_batch(windows, windows_length, img_path):
     N = len(windows)
     X_s = np.zeros((N,windows_length,112,112,3),dtype='float32') #start windows
     X_s_labels = np.zeros(N,dtype='int')
@@ -67,67 +67,33 @@ def process_batch(windows, windows_length, img_path, train=True):
         path = window[0]
         start_frame = window[1] 
         label = window[2]
-        follow_frame = window[3]
+        # follow_frame = window[3]
         # follow_label = windows[4]
 
         imgs = os.listdir(img_path+path)
         imgs.sort(key=str.lower)
         
-        if train:
-            crop_x = random.randint(0, 15)
-            crop_y = random.randint(0, 58)
-            for j in range(windows_length):
-                global img_s
-                global img
-                try:
-                    '''start window'''
-                    img_s = imgs[start_frame + j]
-                    image_s = cv2.imread(img_path + path + '/' + img_s)
-                    image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
-                    image_s = cv2.resize(image_s, (171, 128))
-                    X_s[i][j][:][:][:] = image_s[crop_x:crop_x + 112, crop_y:crop_y + 112, :]
-                    '''follow up window'''
-                    img = imgs[follow_frame + j]###                
-                    image_f = cv2.imread(img_path + path + '/' + img)
-                    image_f = cv2.cvtColor(image_f, cv2.COLOR_BGR2RGB)
-                    image_f = cv2.resize(image_f, (171, 128))
-                    X_f[i][j][:][:][:] = image_f[crop_x:crop_x + 112, crop_y:crop_y + 112, :]
-                except Exception as e:
-                    exc_type, exc_obj, exc_tb = sys.exc_info()
-                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                    print(exc_type, fname, exc_tb.tb_lineno)
-                    print(img_path + path + '/' + img_s)
-                    print(img_path + path + '/' + img)
-                    print("total frame: " + str(len(imgs)))
-                    print("start frame: " +str(start_frame))
-                    print("follow frame: " + str(follow_frame))
-                    print("j = " +str(j))
-                    print(window)
-                    break
-            X_s_labels[i] = label
-            # X_f_labels[i] = follow_label
-        else:
-            for j in range(windows_length):
-                img = imgs[start_frame + j]
-                image_s = cv2.imread(img_path + path + '/' + img)
-                image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
-                image_s = cv2.resize(image_s, (171, 128))
-                X_s[i][j][:][:][:] = image_s[8:120, 30:142, :]
-                img = imgs[follow_frame + j]
-                image_f = cv2.imread(img_path + path + '/' + img)
-                image_f = cv2.cvtColor(image_f, cv2.COLOR_BGR2RGB)
-                image_f = cv2.resize(image_f, (171, 128))
-                X_f[i][j][:][:][:] = image_f[8:120, 30:142, :]
-            X_s_labels[i] = label
-            # X_f_labels[i] = follow_label
-    return X_s, X_f,  X_s_labels
+        crop_x = random.randint(0, 15)
+        crop_y = random.randint(0, 58)
+        for j in range(windows_length):
+            '''start window'''
+            img_s = imgs[start_frame + j]
+            image_s = cv2.imread(img_path + path + '/' + img_s)
+            image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
+            image_s = cv2.resize(image_s, (171, 128))
+            X_s[i][j][:][:][:] = image_s[crop_x:crop_x + 112, crop_y:crop_y + 112, :]
+
+        X_s_labels[i] = label
+    return X_s, X_s_labels
 
 
-def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isTrain=True):
+def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isVal = False):
     """
     input data generator
     """
     batch_size_AS = batch_size>>1
+    if isVal:
+        batch_size_AS = batch_size_AS >> 1
     batch_size_non_AS = batch_size - batch_size_AS
     random.shuffle(AS_windows)
     random.shuffle(non_AS_windows)
@@ -141,13 +107,11 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
             batch_windows = AS_windows[a_AS:b_AS] + non_AS_windows[a_non_AS:b_non_AS]
             random.shuffle(batch_windows)
             
-            X_s, X_f, X_s_labels = process_batch(batch_windows, windows_length, img_path, train=isTrain)
+            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path)
 
             X_s /= 255.
-            X_f /= 255.
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
             yield X_s, Y
-            # yield X_s, X_f, Y
 
 
 def main(force_cpu):
@@ -163,7 +127,7 @@ def main(force_cpu):
         print('using GPU')
 
     N_classes = 20+1
-    batch_size = 16
+    batch_size = 24
     epochs = 16
     input_shape = (16,112,112,3)
     windows_length = 16
@@ -205,17 +169,19 @@ def main(force_cpu):
 #####################
 
     model.summary()
+    return 
+    
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_non_AS_windows = load_train_data() # load train data
     N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
     N_train_iterations = N_train_samples // batch_size 
 
     val_AS_windows, val_non_AS_windows = load_val_data() # load val data
-    N_val_samples = len(val_AS_windows) << 1
+    N_val_samples = len(val_AS_windows) << 2
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
-    print("#train samples:" + str(N_train_samples) +" --#train AS windows: "+ str(len(train_AS_windows)) +" #train non_AS windows: "+str(len(train_non_AS_windows)))
-    print("#val samples:" + str(N_val_samples) +" --#val AS windows: "+ str(len(val_AS_windows)) + " #val non_AS windows: "+ str(len(val_non_AS_windows)))
+    print("#train samples:" + str(N_train_samples) +" --# AS windows in train set: "+ str(len(train_AS_windows)) +" #non_AS windows  in train set: "+str(len(train_non_AS_windows)))
+    print("#val samples:" + str(N_val_samples) +" --#AS windows in val set: "+ str(len(val_AS_windows)) + " #non_AS windows in val set: "+ str(len(val_non_AS_windows)))
     # a=batch_generator(train_AS_windows, train_non_AS_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
     # next(a)
     # test_data, y = next(a)
@@ -230,11 +196,11 @@ def main(force_cpu):
 # ##################################
 
     history = model.fit_generator(batch_generator(train_AS_windows, train_non_AS_windows, 
-                                                    windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True),
+                                                    windows_length, batch_size, N_train_iterations, N_classes,img_path),
                                   steps_per_epoch = N_train_iterations,
                                   epochs = epochs,
                                   validation_data = batch_generator(val_AS_windows, val_non_AS_windows, 
-                                                    windows_length, batch_size, N_val_iterations, N_classes,img_path, isTrain=False),
+                                                    windows_length, batch_size, N_val_iterations, N_classes,img_path, isVal = True),
                                   validation_steps = N_val_iterations,
                                   verbose=1)
 
