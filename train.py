@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 import argparse
 import json
 import sys
@@ -56,7 +55,7 @@ def save_history(history, result_dir):
         fp.close()
 
         
-def process_batch(windows, windows_length, img_path):
+def process_batch(windows, windows_length, img_path, isTrain):
     N = len(windows)
     X_s = np.zeros((N,windows_length,112,112,3),dtype='float32') #start windows
     X_s_labels = np.zeros(N,dtype='int')
@@ -75,25 +74,31 @@ def process_batch(windows, windows_length, img_path):
         
         crop_x = random.randint(0, 15)
         crop_y = random.randint(0, 58)
+        is_flip = random.randint(0, 1) #add flip
         for j in range(windows_length):
             '''start window'''
             img_s = imgs[start_frame + j]
             image_s = cv2.imread(img_path + path + '/' + img_s)
             image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
             image_s = cv2.resize(image_s, (171, 128))
+            if isTrain and is_flip == 1:
+                image_s = cv2.flip(image_s, 1)
             X_s[i][j][:][:][:] = image_s[crop_x:crop_x + 112, crop_y:crop_y + 112, :]
 
         X_s_labels[i] = label
     return X_s, X_s_labels
 
 
-def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isVal = False):
+def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isTrain= True):
     """
     input data generator
     """
     batch_size_AS = batch_size>>1
-    if isVal:
-        batch_size_AS = batch_size_AS >> 1
+    # if isTrain:
+        # batch_size_AS = batch_size//3
+    # else:
+    #     batch_size_AS = batch_size>>2
+
     batch_size_non_AS = batch_size - batch_size_AS
     random.shuffle(AS_windows)
     random.shuffle(non_AS_windows)
@@ -107,7 +112,7 @@ def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_it
             batch_windows = AS_windows[a_AS:b_AS] + non_AS_windows[a_non_AS:b_non_AS]
             random.shuffle(batch_windows)
             
-            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path)
+            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain)
 
             X_s /= 255.
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
@@ -127,7 +132,7 @@ def main(force_cpu):
         print('using GPU')
 
     N_classes = 20+1
-    batch_size = 24
+    batch_size = 16 #24
     epochs = 16
     input_shape = (16,112,112,3)
     windows_length = 16
@@ -169,15 +174,15 @@ def main(force_cpu):
 #####################
 
     model.summary()
-    return 
-    
+       
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_non_AS_windows = load_train_data() # load train data
     N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
+    # N_train_samples = len(train_AS_windows) * 3
     N_train_iterations = N_train_samples // batch_size 
 
     val_AS_windows, val_non_AS_windows = load_val_data() # load val data
-    N_val_samples = len(val_AS_windows) << 2
+    N_val_samples = len(val_AS_windows) << 1 #  N_val_samples = len(val_AS_windows) * 4
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
     print("#train samples:" + str(N_train_samples) +" --# AS windows in train set: "+ str(len(train_AS_windows)) +" #non_AS windows  in train set: "+str(len(train_non_AS_windows)))
@@ -200,7 +205,7 @@ def main(force_cpu):
                                   steps_per_epoch = N_train_iterations,
                                   epochs = epochs,
                                   validation_data = batch_generator(val_AS_windows, val_non_AS_windows, 
-                                                    windows_length, batch_size, N_val_iterations, N_classes,img_path, isVal = True),
+                                                    windows_length, batch_size, N_val_iterations, N_classes,img_path, isTrain = False),
                                   validation_steps = N_val_iterations,
                                   verbose=1)
 
