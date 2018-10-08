@@ -206,16 +206,19 @@ def main(force_cpu):
 
     model.summary()
     from dataUtil import load_train_data, load_val_data
-    train_AS_windows, train_non_AS_windows = load_train_data() # load train data
+    train_AS_windows, train_A_windows, train_BG_windows = load_train_data() # load train data
     N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
     N_train_iterations = N_train_samples // batch_size 
 
-    val_AS_windows, val_non_AS_windows = load_val_data() # load val data
+    val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
     N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
-    print("#train samples:" + str(N_train_samples) +" --#train AS windows: "+ str(len(train_AS_windows)) +" #train non_AS windows: "+str(len(train_non_AS_windows)))
-    print("#val samples:" + str(N_val_samples) +" --#val AS windows: "+ str(len(val_AS_windows)) + " #val non_AS windows: "+ str(len(val_non_AS_windows)))
+    print("#train samples:" + str(N_train_samples) 
+         +"\n --#train AS windows: "+ str(len(train_AS_windows)) +" #train A windows: "+str(len(train_A_windows))+" #train BG windows: "+str(len(train_BG_windows)))
+    print("#val samples:" + str(N_val_samples) 
+         +"\n --#val AS windows: "+ str(len(val_AS_windows)) + " #val non_A windows: "+ str(len(val_A_windows))+ " #val non_BG windows: "+ str(len(val_BG_windows)))
+
     # a=batch_generator(train_AS_windows, train_non_AS_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
     # next(a)
     # test_data, y = next(a)

@@ -21,7 +21,8 @@ def preprocess_input(input_dict, windows_length):
     """
     N_instance = 0
     AS_windows = [] #Action Start windows, the first frame number of the AS windows
-    non_AS_windows = []
+    A_windows = [] #Action
+    BG_windows = [] #back ground 
 
     for videoName, video in input_dict.items():
         N_instance += len(video['frameStamp']) # the number of action instances 
@@ -34,27 +35,29 @@ def preprocess_input(input_dict, windows_length):
             end_frame = instance[1]
             instance_label = instance[2]
             #action start(background + action)
-            for n in range(max(start_frame - windows_length + 1 ,0), min(start_frame + 1 ,leading_frame_of_last_window)): #each start frame exist in 'windows_length' windows
+            for n in range(max(start_frame - windows_length + 1 ,0), min(start_frame + 1 ,leading_frame_of_last_window)): #
                 follow_start_frame = n + windows_length
-                follow_instance_label = instance_label if (follow_start_frame+windows_length -1 ) <= end_frame else 0
-                AS_windows.append([videoName, n, instance_label, follow_start_frame, follow_instance_label])#
+                # follow_instance_label = instance_label if (follow_start_frame+windows_length -1 ) <= end_frame else 0
+                AS_windows.append([videoName, n, instance_label, follow_start_frame]) # , follow_instance_label])#
                 exclusive.append(n)
             #only action ,min(a,leading_frame_of_last_window)=> the annotation is out of range,
             for n in range(start_frame +1 , min(end_frame-windows_length +1,leading_frame_of_last_window)):
                 follow_non_start_frame = n + windows_length
-                follow_instance_label = instance_label if (follow_non_start_frame+windows_length -1 ) <= end_frame else 0
-                non_AS_windows.append([videoName, n, instance_label, follow_non_start_frame, follow_instance_label]) #
+                # follow_instance_label = instance_label if (follow_non_start_frame+windows_length -1 ) <= end_frame else 0
+                A_windows.append([videoName, n, instance_label, follow_non_start_frame]) # , follow_instance_label]) #
                 exclusive.append(n)
-        
+            #the end of the action, contains the action and background frames(remove noise?)
+            for n in range(end_frame - windows_length +1, min(end_frame+1,leading_frame_of_last_window)):
+                exclusive.append(n)
         #non-Action Start windows
         for n in range(leading_frame_of_last_window):
             if n in exclusive:
                 continue
-            non_AS_windows.append([videoName, n, 0, n+windows_length, 0]) #
+            BG_windows.append([videoName, n, 0, n+windows_length, 0]) #
 
     # random.shuffle(AS_windows)
     # random.shuffle(non_AS_windows)
-    return AS_windows, non_AS_windows
+    return AS_windows, A_windows, BG_windows
 
 def init_train_data():
     with open(train_file) as f:
@@ -81,7 +84,7 @@ def load_train_data():
         with open(train_windows_file, 'rb') as handle:
             train_windows = pickle.load(handle)
             assert type(train_windows) is tuple
-            assert len(train_windows) == 2
+            assert len(train_windows) == 3
         return train_windows
     except :
         return init_train_data()
@@ -93,7 +96,7 @@ def load_val_data():
         with open(val_windows_file, 'rb') as handle:
             val_windows = pickle.load(handle)
             assert type(val_windows) is tuple
-            assert len(val_windows) == 2
+            assert len(val_windows) == 3
         return val_windows
     except :
         return init_val_data()
