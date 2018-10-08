@@ -61,7 +61,7 @@ def process_batch(windows, windows_length, img_path, isTrain):
     X_s_labels = np.zeros(N,dtype='int')
     X_f =  np.zeros((N,windows_length,112,112,3),dtype='float32') #follow up windows
     # X_f_labels = np.zeros(N,dtype='int')
-    for i in range(len(windows)):
+    for i in range(len(windows)): # len(windows) == batch size
         window = windows[i]
         path = window[0]
         start_frame = window[1] 
@@ -70,17 +70,17 @@ def process_batch(windows, windows_length, img_path, isTrain):
         # follow_label = windows[4]
 
         imgs = os.listdir(img_path+path)
-        imgs.sort(key=str.lower)
+        imgs.sort(key=str.lower)  
         
         crop_x = random.randint(0, 15)
         crop_y = random.randint(0, 58)
-        is_flip = random.randint(0, 1) #add flip
+        is_flip = random.randint(0, 1) # 1->flip
         for j in range(windows_length):
             '''start window'''
             img_s = imgs[start_frame + j]
             image_s = cv2.imread(img_path + path + '/' + img_s)
             image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
-            image_s = cv2.resize(image_s, (171, 128))
+            image_s = cv2.resize(image_s, (171,128))
             if isTrain and is_flip == 1:
                 image_s = cv2.flip(image_s, 1)
             X_s[i][j][:][:][:] = image_s[crop_x:crop_x + 112, crop_y:crop_y + 112, :]
@@ -89,27 +89,27 @@ def process_batch(windows, windows_length, img_path, isTrain):
     return X_s, X_s_labels
 
 
-def batch_generator(AS_windows, non_AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isTrain= True):
+def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isTrain= True):
     """
     input data generator
     """
     batch_size_AS = batch_size>>1
-    # if isTrain:
-        # batch_size_AS = batch_size//3
-    # else:
-    #     batch_size_AS = batch_size>>2
+    batch_size_A = batch_size_AS>>1
+    batch_size_BG = batch_size - batch_size_AS - batch_size_A
 
-    batch_size_non_AS = batch_size - batch_size_AS
     random.shuffle(AS_windows)
-    random.shuffle(non_AS_windows)
+    random.shuffle(A_windows)
+    random.shuffle(BG_windows)
     while True:
         for i in range(N_iterations):
             a_AS = i*batch_size_AS
-            b_AS = (i+1)*batch_size_AS
-            a_non_AS = i*batch_size_non_AS
-            b_non_AS = (i+1)*batch_size_non_AS
-            
-            batch_windows = AS_windows[a_AS:b_AS] + non_AS_windows[a_non_AS:b_non_AS]
+            b_AS = a_AS + batch_size_AS
+            a_A = i*batch_size_A
+            b_A = a_A + batch_size_A
+            a_BG = i* batch_size_BG
+            b_BG = a_BG + batch_size_BG
+
+            batch_windows = AS_windows[a_AS:b_AS] + A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
             random.shuffle(batch_windows)
             
             X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain)
@@ -132,7 +132,7 @@ def main(force_cpu):
         print('using GPU')
 
     N_classes = 20+1
-    batch_size = 16 #24
+    batch_size = 4 #24
     epochs = 16
     input_shape = (16,112,112,3)
     windows_length = 16
@@ -190,11 +190,13 @@ def main(force_cpu):
     print("#val samples:" + str(N_val_samples) 
          +"\n --#val AS windows: "+ str(len(val_AS_windows)) + " #val non_A windows: "+ str(len(val_A_windows))+ " #val non_BG windows: "+ str(len(val_BG_windows)))
 
-    # a=batch_generator(train_AS_windows, train_non_AS_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
+    # a=batch_generator(train_AS_windows, train_A_windows, train_BG_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
+    # for i in range(2):
     # next(a)
     # test_data, y = next(a)
     # print(len(test_data))
     # print(len(y))
+    # return
     # print(test_data[0])
     # print(test_data.shape)
     # print(test_data[0].shape)
@@ -203,11 +205,11 @@ def main(force_cpu):
     # plt.show()
 # ##################################
 
-    history = model.fit_generator(batch_generator(train_AS_windows, train_non_AS_windows, 
+    history = model.fit_generator(batch_generator(train_AS_windows, train_A_windows, train_BG_windows, 
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path),
                                   steps_per_epoch = N_train_iterations,
                                   epochs = epochs,
-                                  validation_data = batch_generator(val_AS_windows, val_non_AS_windows, 
+                                  validation_data = batch_generator(val_AS_windows, val_A_windows, val_BG_windows,
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path, isTrain = False),
                                   validation_steps = N_val_iterations,
                                   verbose=1)
