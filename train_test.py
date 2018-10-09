@@ -177,12 +177,12 @@ def main(force_cpu):
        
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_A_windows, train_BG_windows = load_train_data() # load train data
-    N_train_samples = len(train_A_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
+    N_train_samples = len(train_A_windows) //10 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
     # N_train_samples = len(train_AS_windows) * 3
     N_train_iterations = N_train_samples // batch_size 
 
     val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
-    N_val_samples = len(val_A_windows) << 1
+    N_val_samples = len(val_A_windows) /5
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
     print("#train samples:" + str(N_train_samples) 
