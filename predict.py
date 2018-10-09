@@ -1,11 +1,11 @@
 # coding=utf8
-from models.model import c3d_model
-from keras.optimizers import SGD,Adam
+from models import c3d_model
 import keras.backend as K
 from keras.utils import np_utils
 import numpy as np
 import cv2
-
+import os
+from LR_Adam import Adam
 
 """###################################
 class index dictionary
@@ -24,17 +24,35 @@ def main():
     input_shape = (16,112,112,3)
     windows_length = 16
 
-    model = c3d_model(input_shape)
-    # init model
-    model = c3d_model(input_shape)
-    lr = 0.005
-    adam = Adam(lr=lr)
+    model = c3d_model.get_model(input_shape)
+
+    lr = 0.0001
+    # Setting the Learning rate multipliers
+    LR_mult_dict = {}
+    LR_mult_dict['conv1']=1
+    LR_mult_dict['conv2']=1
+    LR_mult_dict['conv3a']=1
+    LR_mult_dict['conv3b']=1
+    LR_mult_dict['conv4a']=1
+    LR_mult_dict['conv4b']=1
+    LR_mult_dict['conv5a']=1
+    LR_mult_dict['conv5b']=1
+    LR_mult_dict['fc6']=1
+    LR_mult_dict['fc7']=1
+    LR_mult_dict['fc8']=10
+    # Setting up optimizer
+    base_lr = 0.00001
+    adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
+
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.summary()
-    model.load_weights('results/weights_c3d.h5')
+    weights_dir = './weight'
+    model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
+    model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
+    # model.load_weights('results/weights_c3d.h5')
 
     # read video
-    video = 'videos/video_test_0000007.mp4'
+    video = '/Users/lq/Documents/polito/Thesis/examples/c3d-keras/dM06AMFLsrc.mp4'
     cap = cv2.VideoCapture(video)
 
     clip = []
@@ -64,8 +82,8 @@ def main():
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                             (0, 0, 255), 1)
                 clip.pop(0)
-            # cv2.imshow('result', frame)
-            # cv2.waitKey(10)
+            cv2.imshow('result', frame)
+            cv2.waitKey(10)
         else:
             break
     cap.release()
