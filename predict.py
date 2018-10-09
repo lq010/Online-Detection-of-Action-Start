@@ -1,11 +1,11 @@
 # coding=utf8
-from models.model import c3d_model
-from keras.optimizers import SGD,Adam
+from models import c3d_model
 import keras.backend as K
 from keras.utils import np_utils
 import numpy as np
 import cv2
-
+import os
+from LR_Adam import Adam
 
 """###################################
 class index dictionary
@@ -23,14 +23,33 @@ def main():
 
     input_shape = (16,112,112,3)
     windows_length = 16
-    
-    # init model
-    model = c3d_model(input_shape)
-    lr = 0.005
-    adam = Adam(lr=lr)
+
+    model = c3d_model.get_model(input_shape)
+
+    lr = 0.0001
+    # Setting the Learning rate multipliers
+    LR_mult_dict = {}
+    LR_mult_dict['conv1']=1
+    LR_mult_dict['conv2']=1
+    LR_mult_dict['conv3a']=1
+    LR_mult_dict['conv3b']=1
+    LR_mult_dict['conv4a']=1
+    LR_mult_dict['conv4b']=1
+    LR_mult_dict['conv5a']=1
+    LR_mult_dict['conv5b']=1
+    LR_mult_dict['fc6']=1
+    LR_mult_dict['fc7']=1
+    LR_mult_dict['fc8']=10
+    # Setting up optimizer
+    base_lr = 0.00001
+    adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
+
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.summary()
-    model.load_weights('results/weights_c3d.h5')
+    weights_dir = './weight'
+    model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
+    model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
+    # model.load_weights('results/weights_c3d.h5')
 
     # read video
     bike = '/home/lq/Documents/Thesis/C3D-keras-master/videos/v_Biking_g05_c02.avi'
