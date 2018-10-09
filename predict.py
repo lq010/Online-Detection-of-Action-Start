@@ -23,8 +23,7 @@ def main():
 
     input_shape = (16,112,112,3)
     windows_length = 16
-
-    model = c3d_model(input_shape)
+    
     # init model
     model = c3d_model(input_shape)
     lr = 0.005
@@ -34,7 +33,8 @@ def main():
     model.load_weights('results/weights_c3d.h5')
 
     # read video
-    video = 'videos/video_test_0000007.mp4'
+    bike = '/home/lq/Documents/Thesis/C3D-keras-master/videos/v_Biking_g05_c02.avi'
+    video = bike
     cap = cv2.VideoCapture(video)
 
     clip = []
@@ -42,8 +42,8 @@ def main():
     while True:
         ret, frame = cap.read()
         counter += 1
-        if counter < 8250:
-            continue
+        # if counter < 8250:
+        #     continue
         if ret:
             tmp = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             clip.append(cv2.resize(tmp, (171, 128)))
@@ -64,8 +64,8 @@ def main():
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                             (0, 0, 255), 1)
                 clip.pop(0)
-            # cv2.imshow('result', frame)
-            # cv2.waitKey(10)
+            cv2.imshow('result', frame)
+            cv2.waitKey(10)
         else:
             break
     cap.release()
