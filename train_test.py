@@ -182,7 +182,7 @@ def main(force_cpu):
     N_train_iterations = N_train_samples // batch_size 
 
     val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
-    N_val_samples = len(val_A_windows) /5
+    N_val_samples = len(val_A_windows) //5
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
     print("#train samples:" + str(N_train_samples) 
