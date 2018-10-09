@@ -94,8 +94,8 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
     input data generator
     """
     # batch_size_AS = batch_size>>1
-    batch_size_A = batch_size>>1
-    batch_size_BG = batch_size - batch_size_A
+    batch_size_A = batch_size
+    # batch_size_BG = batch_size - batch_size_A
 
     # random.shuffle(AS_windows)
     random.shuffle(A_windows)
@@ -106,10 +106,10 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
             # b_AS = a_AS + batch_size_AS
             a_A = i*batch_size_A
             b_A = a_A + batch_size_A
-            a_BG = i* batch_size_BG
-            b_BG = a_BG + batch_size_BG
+            # a_BG = i* batch_size_BG
+            # b_BG = a_BG + batch_size_BG
 
-            batch_windows = A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
+            batch_windows = A_windows[a_A:b_A] #+ BG_windows[a_BG:b_BG]
             random.shuffle(batch_windows)
             
             X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain)
