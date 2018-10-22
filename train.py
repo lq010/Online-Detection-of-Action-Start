@@ -4,6 +4,7 @@ import sys
 import os
 from models import c3d_model
 import keras.backend as K
+import keras.callbacks as callbacks
 from keras.utils import np_utils
 from schedules import onetenth_4_8_12
 import numpy as np
@@ -89,35 +90,75 @@ def process_batch(windows, windows_length, img_path, isTrain):
     return X_s, X_s_labels
 
 
-def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path, isTrain= True):
+def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
     """
     input data generator
     """
-    batch_size_AS = batch_size>>1
-    batch_size_A = batch_size_AS>>1
-    batch_size_BG = batch_size - batch_size_AS - batch_size_A
+    #1/2 AS, 1/4 A, 1/4 BG
+    even_AS_size = batch_size >> 1
+    even_A_size = even_AS_size >> 1
+    even_BG_size = batch_size - even_AS_size - even_A_size
+
+    #1/2 A, 1/2 BG
+    odd_A_size = batch_size >> 1
+    odd_BG_size = batch_size - odd_A_size
 
     random.shuffle(AS_windows)
     random.shuffle(A_windows)
     random.shuffle(BG_windows)
+    
+    N_AS = len(AS_windows)
+    index_AS = 0
+    index_A = 0
+    index_BG = 0
     while True:
         for i in range(N_iterations):
-            a_AS = i*batch_size_AS
-            b_AS = a_AS + batch_size_AS
-            a_A = i*batch_size_A
-            b_A = a_A + batch_size_A
-            a_BG = i* batch_size_BG
-            b_BG = a_BG + batch_size_BG
+            batch_windows = []
+            if i%2 == 0: # even, 1/2 AS, 1/4 A, 1/4 BG
+                a_AS = index_AS
+                b_AS = a_AS + even_AS_size
+                a_A = index_A
+                b_A = a_A + even_A_size
+                a_BG = index_BG 
+                b_BG = a_BG + even_BG_size
+                if b_AS > N_AS:
+                    print("AS windows, index out of range")
+                    index_AS = 0
+                    a_AS = 0 
+                    b_AS = a_AS+even_AS_size
+                    random.shuffle(AS_windows)
+                batch_windows = AS_windows[a_AS:b_AS] + A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
+            else: #odd, 1/2 A, 1/2 BG
+                a_A = index_A
+                b_A = a_A + odd_A_size
+                a_BG = index_BG 
+                b_BG = a_BG + odd_BG_size
+                batch_windows = A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
 
-            batch_windows = AS_windows[a_AS:b_AS] + A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
+            index_A = b_A
+            index_AS = b_AS
+            index_BG = b_BG
+                       
             random.shuffle(batch_windows)
             
-            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain)
+            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain= True)
 
             X_s /= 255.
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
             yield X_s, Y
 
+def val_batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
+    N_A = len(A_windows)
+    windows = AS_windows + A_windows + BG_windows[:N_A]
+    while True:
+        for i in range(N_iterations):
+            a = i*batch_size
+            b = a+batch_size
+            batch_windows = windows[a:b]
+            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain= False)
+            X_s /= 255.
+            Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
+            yield X_s, Y
 
 def main(force_cpu):
     from data import videoPaths as path    
@@ -132,8 +173,8 @@ def main(force_cpu):
         print('using GPU')
 
     N_classes = 20+1
-    batch_size = 4 #24
-    epochs = 16
+    batch_size = 24
+    epochs = 4
     input_shape = (16,112,112,3)
     windows_length = 16
 
@@ -151,7 +192,7 @@ def main(force_cpu):
     LR_mult_dict['conv5b']=1
     LR_mult_dict['fc6']=1
     LR_mult_dict['fc7']=1
-    LR_mult_dict['fc8']=10
+    LR_mult_dict['fc8']=5
 
     # Setting up optimizer
     base_lr = 0.00001
@@ -177,21 +218,37 @@ def main(force_cpu):
        
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_A_windows, train_BG_windows = load_train_data() # load train data
-    N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
-    # N_train_samples = len(train_AS_windows) * 3
-    N_train_iterations = N_train_samples // batch_size 
+   
+    N_A_samples = len(train_A_windows)
+    N_batch_groups = N_A_samples // (batch_size//2 + batch_size//4)
+    N_train_iterations = N_batch_groups * 2
+
+
+    # N_train_samples = len(train_AS_windows) << 1 #  N_train_samples = len(train_AS_windows) * 2, half AS, half non-AS
+    # # N_train_samples = len(train_AS_windows) * 3
+    # N_train_iterations = N_train_samples // batch_size 
 
     val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
-    N_val_samples = len(val_AS_windows) << 1
+    N_val_samples = len(val_A_windows)+len(val_AS_windows)*2
+    # N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
-    print("#train samples:" + str(N_train_samples) 
-         +"\n --#train AS windows: "+ str(len(train_AS_windows)) +" #train A windows: "+str(len(train_A_windows))+" #train BG windows: "+str(len(train_BG_windows)))
-    print("#val samples:" + str(N_val_samples) 
-         +"\n --#val AS windows: "+ str(len(val_AS_windows)) + " #val non_A windows: "+ str(len(val_A_windows))+ " #val non_BG windows: "+ str(len(val_BG_windows)))
+    print("N_batch_group:" + str(N_batch_groups)+
+        "--#train AS windows: "+ str(len(train_AS_windows)) +" #train A windows: "+str(len(train_A_windows))+" #train BG windows: "+str(len(train_BG_windows)))
+    print("-N_val_samples:"+str(N_val_samples)+ 
+            "\n--#val AS windows: "+ str(len(val_AS_windows)) + " #val non_A windows: "+ str(len(val_A_windows))+ " #val non_BG windows: "+ str(len(val_BG_windows)))
 
     # a=batch_generator(train_AS_windows, train_A_windows, train_BG_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
-    # for i in range(2):
+    # for i in range(N_train_iterations):
+    #     print("# " + str(i))
+    #     length = next(a)
+    #     try:    
+    #         assert length == batch_size
+    #     except AssertionError:
+    #         print("error:{}".format(len(test_data)))
+    #         return
+        
+    # return 
     # next(a)
     # test_data, y = next(a)
     # print(len(test_data))
@@ -205,12 +262,14 @@ def main(force_cpu):
     # plt.show()
 # ##################################
 
+    tbCallBack = callbacks.TensorBoard(log_dir='./log', histogram_freq=0, write_graph=True, write_images=True)
     history = model.fit_generator(batch_generator(train_AS_windows, train_A_windows, train_BG_windows, 
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path),
                                   steps_per_epoch = N_train_iterations,
                                   epochs = epochs,
-                                  validation_data = batch_generator(val_AS_windows, val_A_windows, val_BG_windows,
-                                                    windows_length, batch_size, N_val_iterations, N_classes,img_path, isTrain = False),
+                                  callbacks=[tbCallBack],
+                                  validation_data = val_batch_generator( val_AS_windows, val_A_windows, val_BG_windows,
+                                                    windows_length, batch_size, N_val_iterations, N_classes,img_path),
                                   validation_steps = N_val_iterations,
                                   verbose=1)
 
