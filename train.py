@@ -132,7 +132,7 @@ def main(force_cpu):
         print('using GPU')
 
     N_classes = 20+1
-    batch_size = 4 #24
+    batch_size = 24
     epochs = 16
     input_shape = (16,112,112,3)
     windows_length = 16
