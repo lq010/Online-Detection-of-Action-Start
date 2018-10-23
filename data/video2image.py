@@ -22,7 +22,8 @@ for video in video_list:
     for i in range(fps):
         ret, frame = cap.read()
         if ret:
-            cv2.imwrite(save_name+str(10000+fps_count)+'.jpg',frame)
+            img = "{}{:04n}{}".format(save_name,i,'.jpg')
+            cv2.imwrite(img,frame)
             fps_count += 1
 
 toc = time.time()
