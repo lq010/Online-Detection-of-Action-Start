@@ -22,7 +22,7 @@ for video in video_list:
     for i in range(fps):
         ret, frame = cap.read()
         if ret:
-            img = "{}{:04n}{}".format(save_name,i,'.jpg')
+            img = "{}{:07n}{}".format(save_name,i,'.jpg')
             cv2.imwrite(img,frame)
             fps_count += 1
 
