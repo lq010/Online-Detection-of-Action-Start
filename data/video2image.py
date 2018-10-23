@@ -10,7 +10,8 @@ video_list = os.listdir(video_path)
 import time 
 tic = time.time()
 
-for video in video_list:
+for counter,video in enumerate(video_list):
+    
     prefix = video.split('.')[0]
     if not os.path.exists(dest_path+'/'+prefix):
         os.makedirs(dest_path+'/'+prefix)
@@ -25,6 +26,6 @@ for video in video_list:
             img = "{}{:07n}{}".format(save_name,i,'.jpg')
             cv2.imwrite(img,frame)
             fps_count += 1
-
+    print("{:03n}: video <{}> done!".format(counter, video))
 toc = time.time()
 print(str(toc-tic)+'s')
