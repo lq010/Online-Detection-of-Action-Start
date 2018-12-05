@@ -266,6 +266,9 @@ def main(force_cpu):
     # plt.imshow(test_data[0])
     # plt.show()
 # ##################################
+    best_weight_dir = './tmp'
+    if os.path.isdir(best_weight_dir):
+        os.makedirs(best_weight_dir)
     checkpointer = ModelCheckpoint(filepath='./tmp/weights.hdf5', verbose=1, save_best_only=True)
     NAME = "THUMOS-{}".format(int(time.time()))
     tbCallBack = callbacks.TensorBoard(log_dir="./log/{}".format(NAME), histogram_freq=0, write_graph=True, write_images=True)
