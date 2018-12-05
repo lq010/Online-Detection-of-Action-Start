@@ -16,12 +16,10 @@ import matplotlib
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import util
-import time 
 
 from my_callbacks import LearningRateTracker
 
 from LR_Adam import Adam
-from LR_SGD import SGD
 
 def plot_history(history, result_dir):
     plt.plot(history.history['acc'], marker='.')
@@ -98,40 +96,33 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
     """
     input data generator
     """
-    #1/2 AS, 1/4 A, 1/4 BG
-    even_AS_size = batch_size >> 1
-    even_A_size = even_AS_size >> 1
-    even_BG_size = batch_size - even_AS_size - even_A_size
+    non_AS_windows = A_windows + BG_windows
 
-    #1/2 A, 1/2 BG
-    odd_A_size = batch_size >> 1
-    odd_BG_size = batch_size - odd_A_size
+    AS_size = batch_size//2
+    non_AS_size = batch_size - AS_size
 
     random.shuffle(AS_windows)
-    random.shuffle(A_windows)
-    random.shuffle(BG_windows)
+    random.shuffle(non_AS_windows)
     
     N_AS = len(AS_windows)
     index_AS = 0
-    index_A = 0
-    index_BG = 0
+    index_non_AS = 0
     while True:
         for i in range(N_iterations):
             batch_windows = []
             # if i%2 == 0: # even, 1/2 AS, 1/4 A, 1/4 BG
             a_AS = index_AS
-            b_AS = a_AS + even_AS_size
-            a_A = index_A
-            b_A = a_A + even_A_size
-            a_BG = index_BG 
-            b_BG = a_BG + even_BG_size
+            b_AS = a_AS + AS_size
+            a_non_AS = index_non_AS
+            b_non_AS = a_non_AS + index_non_AS
+
             if b_AS > N_AS:
                 print("\nAS windows, index out of range")
                 index_AS = 0
                 a_AS = 0 
-                b_AS = a_AS+even_AS_size
+                b_AS = a_AS+AS_size
                 random.shuffle(AS_windows)
-            batch_windows = AS_windows[a_AS:b_AS] + A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
+            batch_windows = AS_windows[a_AS:b_AS] +non_AS_windows[a_non_AS:b_non_AS]
             # else: #odd, 1/2 A, 1/2 BG
             #     a_A = index_A
             #     b_A = a_A + odd_A_size
@@ -139,9 +130,9 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
             #     b_BG = a_BG + odd_BG_size
             #     batch_windows = A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
 
-            index_A = b_A
+           
             index_AS = b_AS
-            index_BG = b_BG
+            index_non_AS = b_non_AS
                        
             random.shuffle(batch_windows)
             
@@ -153,7 +144,7 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
 
 def val_batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
     N_A = len(A_windows)
-    windows = AS_windows + A_windows + BG_windows[:N_A]
+    windows = AS_windows + A_windows + BG_windows
     while True:
         for i in range(N_iterations):
             a = i*batch_size
@@ -199,12 +190,10 @@ def main(force_cpu):
     LR_mult_dict['fc8']=5
 
     # Setting up optimizer
-    base_lr = 0.00005
+    base_lr = 0.00001
     adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
-    sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
-    opt = sgd 
-    
-    model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
+
+    model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
     model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
 ######################    
     # for layer in model.layers:
@@ -232,10 +221,10 @@ def main(force_cpu):
 
     #N_train_samples = len(train_AS_windows) *2 << 1 #  half AS, half non-AS
     N_train_samples = len(train_AS_windows) * 3
-    N_train_iterations = N_train_samples // batch_size 
+    N_train_iterations = 5000#N_train_samples // batch_size 
 
     val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
-    N_val_samples = len(val_A_windows)*2+len(val_AS_windows)
+    N_val_samples = len(val_A_windows)+len(val_AS_windows)+len(val_BG_windows)
     # N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
@@ -267,13 +256,12 @@ def main(force_cpu):
     # plt.show()
 # ##################################
     checkpointer = ModelCheckpoint(filepath='./tmp/weights.hdf5', verbose=1, save_best_only=True)
-    NAME = "THUMOS-{}".format(int(time.time()))
-    tbCallBack = callbacks.TensorBoard(log_dir="./log/{}".format(NAME), histogram_freq=0, write_graph=True, write_images=True)
+    tbCallBack = callbacks.TensorBoard(log_dir='./log', histogram_freq=0, write_graph=True, write_images=True)
     history = model.fit_generator(batch_generator(train_AS_windows, train_A_windows, train_BG_windows, 
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path),
-                                  steps_per_epoch = N_train_iterations,
+                                  steps_per_epoch =  N_train_iterations,
                                   epochs = epochs,
-                                  callbacks=[tbCallBack,checkpointer,onetenth_4_8_12(base_lr)],
+                                  callbacks=[tbCallBack,checkpointer],
                                   validation_data = val_batch_generator( val_AS_windows, val_A_windows, val_BG_windows,
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path),
                                   validation_steps = N_val_iterations,
@@ -283,7 +271,7 @@ def main(force_cpu):
         os.mkdir('results/')
     plot_history(history, 'results/')
     save_history(history, 'results/')
-    model.save_weights('results/weights_c3d.h5')
+    model.save_weights('results/weights_c3d_5kIt.h5')
 
 
 if __name__ == '__main__':

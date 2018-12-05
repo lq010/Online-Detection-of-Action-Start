@@ -48,6 +48,7 @@ def main():
     model.summary()
     weights_dir = './weight'
     model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
+    model_weight_filename = './results/weights_c3d.h5'
     model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
     # model.load_weights('results/weights_c3d.h5')
 
