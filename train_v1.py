@@ -267,7 +267,7 @@ def main(force_cpu):
     # plt.show()
 # ##################################
     best_weight_dir = './tmp'
-    if os.path.isdir(best_weight_dir):
+    if not os.path.isdir(best_weight_dir):
         os.makedirs(best_weight_dir)
     checkpointer = ModelCheckpoint(filepath='./tmp/weights.hdf5', verbose=1, save_best_only=True)
     NAME = "THUMOS-{}".format(int(time.time()))
