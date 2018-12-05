@@ -196,7 +196,7 @@ def main(force_cpu):
     LR_mult_dict['conv5b']=1
     LR_mult_dict['fc6']=1
     LR_mult_dict['fc7']=1
-    LR_mult_dict['fc8']=5
+    LR_mult_dict['fc8']=10
 
     # Setting up optimizer
     base_lr = 0.00005
@@ -228,15 +228,13 @@ def main(force_cpu):
     # N_A_samples = len(train_A_windows)
     # N_batch_groups = N_A_samples // (batch_size//2 + batch_size//4)
     # N_train_iterations = N_batch_groups * 2
-    
-    train_AS_windows = train_AS_windows[:48]
+
     #N_train_samples = len(train_AS_windows) *2 << 1 #  half AS, half non-AS
     N_train_samples = len(train_AS_windows) * 2
     N_train_iterations = N_train_samples // batch_size 
 
     val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
-    val_AS_windows =val_AS_windows[:24]
-    val_A_windows =val_A_windows[:48]
+
     N_val_samples = len(val_A_windows)+len(val_AS_windows)*2
     # N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
