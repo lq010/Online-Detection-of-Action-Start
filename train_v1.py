@@ -62,9 +62,9 @@ def save_history(history, result_dir):
         
 def process_batch(windows, windows_length, img_path, isTrain):
     N = len(windows)
-    X_s = np.zeros((N,windows_length,112,112,3),dtype='float32') #start windows
+    X_s = np.zeros((N,windows_length,112,112,3),dtype=np.float32) #start windows
     X_s_labels = np.zeros(N,dtype='int')
-    X_f =  np.zeros((N,windows_length,112,112,3),dtype='float32') #follow up windows
+    X_f =  np.zeros((N,windows_length,112,112,3),dtype=np.float32) #follow up windows
     # X_f_labels = np.zeros(N,dtype='int')
     for i in range(len(windows)): # len(windows) == batch size
         window = windows[i]
@@ -84,7 +84,7 @@ def process_batch(windows, windows_length, img_path, isTrain):
             '''start window'''
             img_s = imgs[start_frame + j]
             image_s = cv2.imread(img_path + path + '/' + img_s)
-            image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
+            # image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
             image_s = cv2.resize(image_s, (171,128))
             if isTrain and is_flip == 1:
                 image_s = cv2.flip(image_s, 1)
@@ -178,7 +178,7 @@ def main(force_cpu):
 
     N_classes = 20+1
     batch_size = 24
-    epochs = 2
+    epochs = 16
     input_shape = (16,112,112,3)
     windows_length = 16
 
@@ -228,20 +228,22 @@ def main(force_cpu):
     # N_A_samples = len(train_A_windows)
     # N_batch_groups = N_A_samples // (batch_size//2 + batch_size//4)
     # N_train_iterations = N_batch_groups * 2
- 
-
+    
+    train_AS_windows = train_AS_windows[:48]
     #N_train_samples = len(train_AS_windows) *2 << 1 #  half AS, half non-AS
-    N_train_samples = len(train_AS_windows) * 3
+    N_train_samples = len(train_AS_windows) * 2
     N_train_iterations = N_train_samples // batch_size 
 
     val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
-    N_val_samples = len(val_A_windows)*2+len(val_AS_windows)
+    val_AS_windows =val_AS_windows[:24]
+    val_A_windows =val_A_windows[:48]
+    N_val_samples = len(val_A_windows)+len(val_AS_windows)*2
     # N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
     print("--#train AS windows: "+ str(len(train_AS_windows)) +" #train A windows: "+str(len(train_A_windows))+" #train BG windows: "+str(len(train_BG_windows)))
     print("-N_val_samples:"+str(N_val_samples)+ 
-            "\n--#val AS windows: "+ str(len(val_AS_windows)) + " #val non_A windows: "+ str(len(val_A_windows))+ " #val non_BG windows: "+ str(len(val_BG_windows)))
+            "\n--#val AS windows: "+ str(len(val_AS_windows)) + " #val A windows: "+ str(len(val_A_windows))+ " #val BG windows: "+ str(len(val_BG_windows)))
 
     # a=batch_generator(train_AS_windows, train_A_windows, train_BG_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
     # for i in range(N_train_iterations):
