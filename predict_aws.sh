@@ -1,0 +1,1 @@
+python -m predict.predict -w=/home/ubuntu/thesis/result/adam/weights.hdf5 -o=./home/ubuntu/thesis/result/adam -d=/home/ubuntu/thesis/storage/test_videos
