@@ -1,0 +1,1 @@
+python -m Evaluation.get_detection_performance ./data/test_ground_truth.json ./data/atest.json

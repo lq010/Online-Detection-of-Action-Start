@@ -1,0 +1,1 @@
+python -m predict.check_predicted_file
