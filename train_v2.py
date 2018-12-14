@@ -227,7 +227,7 @@ def main():
     N_val_iterations = N_val_samples//batch_size
 
 # ####################################   
-    a=batch_generator(train_AS_windows, train_A_windows, train_BG_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
+    # a=batch_generator(train_AS_windows, train_A_windows, train_BG_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path,isTrain=True)
     
     # for i in range(N_train_iterations):
     #     print("# " + str(i))
