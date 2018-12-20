@@ -5,7 +5,7 @@ import time
 import json
 
 output_dir = 'data/dataset'
-output_path = os.path.join(output_dir, 'video_features.hdf5')
+output_path = '/media/lq/C13E-1ED0/dataset/THUMOS/result/adam_temporal_2nd/best_weight/video_features_adam_float64.hdf5'#os.path.join(output_dir, 'video_features.hdf5')
 GT_file = 'data/test_ground_truth.json'
 
 window_length = 16
@@ -27,7 +27,7 @@ time_offset = 10
 
 frames = {}
 from src.io_data import get_num_frames
-dir ='/media/lq/C13E-1ED0/dataset/THUMOS/tmptest'
+dir ='/media/lq/C13E-1ED0/dataset/THUMOS/test'
 
 def number_of_frames():
     videos = os.listdir(dir)
@@ -71,8 +71,12 @@ def print_attrs(name, obj):
     Action_indexes = np.argmax(predictions,axis=2) 
     scores = predictions.max(axis =2)
     result[name] = []
-    total_duration = ground_truth[name]['duration']
-    total_frames = ground_truth[name]['totFrames']
+    try:
+        total_duration = ground_truth[name]['duration']
+        total_frames = ground_truth[name]['totFrames']
+    except KeyError as e:
+        print('video <{}> only exist in ambiguous list, skiped.'.format(name))
+        return
     for i in range (1,len(Action_indexes)):
         Ct = int(Action_indexes[i]) # the out put of current window, C: class of an action
         Cp = int(Action_indexes[i-1]) #the out put of previous window
@@ -102,7 +106,7 @@ def get_result():
             
 
 if __name__ == '__main__':
-   
+ 
     r = get_result()
     print("number of AS:")
     for i in r:
@@ -114,4 +118,6 @@ if __name__ == '__main__':
     #     print( "{}: {}".format(i,f[i]))
 
     check_prediction_shape()
+
+    
     # evaluate(r)

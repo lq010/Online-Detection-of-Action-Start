@@ -3,7 +3,10 @@ import os
 import numpy as np
 import time
 import json
+import argparse
 
+window_length = 16
+time_offset = 10
 
 """###################################
 class index dictionary
@@ -16,49 +19,83 @@ for line in lines:
     class_index[int(item[2])] = item[1]
 index_file.close()
 
-
-output_dir = 'data/dataset/sgd_momentum'
-output_path = os.path.join(output_dir, 'video_features.hdf5')
+'''#########
+get the grount truth
+'''
 GT_file = 'data/test_ground_truth.json'
-
-window_length = 16
-threshold_score = 0.5
-time_offset = 10
-
-
-'''get the grount truth'''
 with open(GT_file) as f:
     ground_truth = json.load(f)
 
 
-result = dict()
-def print_attrs(name, obj):
-    predictions = np.array(obj)
-    max_scores_indexes = np.argmax(predictions,axis=2)
-    max_scores = predictions.max(axis =2)
-    result[name] = []
-    total_duration = ground_truth[name]['duration']
-    total_frames = ground_truth[name]['totFrames']
-    for i in range (1,len(max_scores_indexes)):
-        Ct = int(max_scores_indexes[i]) # the out put of current window, C: class of an action
-        Cp = int(max_scores_indexes[i-1]) #the out put of previous window
-        if Ct > 0 and Cp != Ct and max_scores[i]>= threshold_score: # 0-> background, 1-20->actions
-            t = (i+window_length-1)/total_frames * total_duration
+def get_result(rawPredictions, threshold_score):
+    result = dict()
+    def print_attrs(name, obj):
+        predictions = np.array(obj)
+        arg_axis = len(predictions.shape)-1
+        max_scores_indexes = np.argmax(predictions,axis= arg_axis)
+        max_scores = predictions.max(axis = arg_axis)
+        result[name] = []
+        try:
+            total_duration = ground_truth[name]['duration']
+            total_frames = ground_truth[name]['totFrames']
+        except KeyError as e:
+            print('video <{}> only exist in ambiguous list, skiped.'.format(name))
+            return
+        for i in range (1,len(max_scores_indexes)):
+            Ct = int(max_scores_indexes[i]) # the out put of current window, C: class of an action
+            Cp = int(max_scores_indexes[i-1]) #the out put of previous window
+            if Ct > 0 and Cp != Ct and max_scores[i]>= threshold_score: # 0-> background, 1-20->actions
+                t = (i+window_length-1)/total_frames * total_duration
+                result[name].append({'label':class_index[Ct], 'time':t , 'score':float(max_scores[i])})
 
-            result[name].append({'label':class_index[Ct], 'time':t , 'score':float(max_scores[i])})
-
-def get_result():
-    with h5py.File(output_path, 'r+') as f:
+    with h5py.File(rawPredictions, 'r') as f:
         f.visititems(print_attrs)
     return result
 
 if __name__ == '__main__':
-    result = get_result()
-    save_path = './data/atest.json'
+    parser = argparse.ArgumentParser(
+        description='create the final result')
+    parser.add_argument(
+        '-p',
+        '--raw-predictions]',
+        type=str,
+        dest='rawPredictions',
+        help='the raw prediction file')
+    parser.add_argument(
+        '-o',
+        '--output-dir',
+        type=str,
+        dest='output',
+        default='data/dataset',
+        help=
+        'directory where to store the final result (default: %(default)s)'
+    )
+    parser.add_argument(
+        '-s',
+        '--threshold-score',
+        type=float,
+        dest='threshold_score',
+        default=0.5,
+        help=
+        'directory where to store the final result (default: %(default)s)'
+    )
+    args = parser.parse_args()
+    rawPredictions =args.rawPredictions
+    threshold_score = args.threshold_score
+    save_name = rawPredictions.split('/')[-1].split('.')[0] + '_score_' +str(threshold_score)+'.json'
+    save_path = os.path.join(args.output, save_name)
+
+    result = get_result(rawPredictions, args.threshold_score)
+
     with open(save_path, 'w') as f:
         json.dump(result, f)
     print('file {} created.'.format(save_path))
 
+
+
+
+    # with h5py.File(output_path, 'r+') as f:
+    #     del f['video_test_0001235']
 
 ''''''
 
