@@ -152,8 +152,8 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
             yield X_s, Y
 
 def val_batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
-    N_A = len(A_windows)
-    windows = AS_windows + A_windows + BG_windows[:N_A]
+    N = (len(AS_windows)+batch_size)//2    
+    windows = AS_windows + A_windows[:N] + BG_windows[:N]
     while True:
         for i in range(N_iterations):
             a = i*batch_size
@@ -177,8 +177,8 @@ def main(force_cpu):
         print('using GPU')
 
     N_classes = 20+1
-    batch_size = 24
-    epochs = 16
+    batch_size = 16
+    epochs = 4
     input_shape = (16,112,112,3)
     windows_length = 16
 
@@ -199,10 +199,10 @@ def main(force_cpu):
     LR_mult_dict['fc8']=10
 
     # Setting up optimizer
-    base_lr = 0.00005
+    base_lr = 0.00001
     adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
-    sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
-    opt = sgd 
+    # sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
+    opt = adam
     
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
     model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
@@ -235,7 +235,7 @@ def main(force_cpu):
 
     val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
 
-    N_val_samples = len(val_A_windows)+len(val_AS_windows)*2
+    N_val_samples = len(val_AS_windows)*2
     # N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
 # ####################################   
@@ -281,12 +281,12 @@ def main(force_cpu):
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path),
                                   validation_steps = N_val_iterations,
                                   verbose=1)
-
-    if not os.path.exists('results/'):
-        os.mkdir('results/')
-    plot_history(history, 'results/')
-    save_history(history, 'results/')
-    model.save_weights('results/weights_c3d.h5')
+    resultDir = 'results/adam/'
+    if not os.path.exists(resultDir):
+        os.mkdir(resultDir)
+    plot_history(history, resultDir)
+    save_history(history, resultDir)
+    model.save_weights(resultDir+'/weights_c3d.h5')
 
 
 if __name__ == '__main__':

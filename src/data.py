@@ -93,8 +93,8 @@ class VideoGenerator(object):
         video_id = self.videos[index]
         path = self.stored_videos_path + '/' + video_id + '.' + self.stored_videos_extension
         vid_array = video_to_array(path, start_frame=0,resize=self.resize_size)
-        if vid_array is not None:
-            vid_array = vid_array[:,8:120,30:142,:] #input size (112,112)
+        # if vid_array is not None:
+        #     vid_array = vid_array[:,8:120,30:142,:] #input size (112,112)
         #     # vid_array = vid_array.transpose(1, 0, 2, 3)
         #     nb_frames = vid_array.shape[0]
         #     nb_instances = nb_frames // self.length

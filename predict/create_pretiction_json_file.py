@@ -62,10 +62,10 @@ if __name__ == '__main__':
         dest='rawPredictions',
         help='the raw prediction file')
     parser.add_argument(
-        '-o',
-        '--output-dir',
+        '-d',
+        '--prediction-dir',
         type=str,
-        dest='output',
+        dest='dir',
         default='data/dataset',
         help=
         'directory where to store the final result (default: %(default)s)'
@@ -80,10 +80,10 @@ if __name__ == '__main__':
         'directory where to store the final result (default: %(default)s)'
     )
     args = parser.parse_args()
-    rawPredictions =args.rawPredictions
+    rawPredictions =os.path.join(args.dir, args.rawPredictions)
     threshold_score = args.threshold_score
-    save_name = rawPredictions.split('/')[-1].split('.')[0] + '_score_' +str(threshold_score)+'.json'
-    save_path = os.path.join(args.output, save_name)
+    save_name = args.rawPredictions.replace('.hdf5', '_score_' +str(threshold_score)+'.json')
+    save_path = os.path.join(args.dir, save_name)
 
     result = get_result(rawPredictions, args.threshold_score)
 
