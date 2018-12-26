@@ -1,10 +1,10 @@
-from keras.layers import Dense,Dropout,Conv3D,Input,MaxPool3D,Flatten,Activation,TimeDistributed,Permute,merge,Conv2D, Layer, Lambda
+from keras.layers import Dense,Dropout,Conv3D,Input,MaxPool3D,Flatten,Activation,TimeDistributed,Permute,merge,Conv2D, Layer
 from keras.layers.convolutional import ZeroPadding3D
 from keras.regularizers import l2
 from keras.models import Model
 import keras.backend as K
 import tensorflow as tf
-import numpy as np
+
 # Custom loss layer
 class CustomVariationalLayer(Layer):
     def __init__(self, **kwargs):
@@ -16,15 +16,14 @@ class CustomVariationalLayer(Layer):
         return tf.nn.l2_loss(x)
     def categorical_crossentropy(self, y_true, y_pred):
         return K.categorical_crossentropy(y_true, y_pred)
-        
     def call(self, inputs):
         x_s = inputs[0]
         x_f = inputs[1]
-        # true = inputs[2]
-        # pred = inputs[3]
+        true = inputs[2]
+        pred = inputs[3]
         loss1 = self.myl2_loss(x_s, x_f)*0.1
-        # loss2 = self.categorical_crossentropy(true,pred)
-        self.add_loss([loss1], inputs=inputs)
+        loss2 = self.categorical_crossentropy(true,pred)
+        self.add_loss([loss1,loss2], inputs=inputs)
         # we don't use this output, but it has to have the correct shape:
         return K.ones_like(x_s)
 
@@ -60,12 +59,11 @@ Flatten5 = Flatten()
 
 #FC6
 FC6 = Dense(4096, activation='relu', name='fc6')
-seed = np.random.randint(10e6)
-Drop6 = Dropout(dropout_ratio, name='dropout_6', seed = seed)
+Drop6 = Dropout(dropout_ratio, name='dropout_6')
 
 #FC7
 FC7 = Dense(4096, activation='relu', name='fc7')
-Drop7 = Dropout(dropout_ratio,name='dropout_7')
+Drop7 = Dropout(dropout_ratio ,name='dropout_7')
 
 
 ''''''
@@ -101,7 +99,7 @@ def conv_fc7(X_input):
 
     #FC7
     x = FC7(x)
-    # x = Drop7(x)
+    x = Drop7(x)
     return x
 
 
@@ -120,19 +118,18 @@ def c3d_temportal_model(input_shape, nb_classes):
     X_s_input = Input(input_shape, name = 'input_s', dtype = 'float32')
     X_f_input = Input(input_shape, name = 'input_f', dtype = 'float32')
 
-    # Y = Input((nb_classes,), name = 'true_label', dtype = 'float32')
+    Y = Input((nb_classes,), name = 'true_label', dtype = 'float32')
 
     x_s_7 = conv_fc7(X_s_input)
     x_f_7 = conv_fc7(X_f_input)
-    
-    x_s = Drop7(x_s_7)
+ 
     #FC8
-    x_s = Dense(nb_classes,activation='softmax', name = 'fc8')(x_s)
-        
-    dist = Lambda(lambda x: (x[0]-x[1]), name='temporal')([x_s_7,x_f_7])
+    x_s = Dense(nb_classes,activation='softmax', name = 'fc8')(x_s_7)
     
 
-    model = Model(inputs = [X_s_input, X_f_input], outputs = [x_s,dist])
+    loss_layer = CustomVariationalLayer(name='temporal')([x_s_7, x_f_7, Y, x_s])
+
+    model = Model(inputs = [X_s_input, X_f_input, Y], outputs = [loss_layer])
     # model = Model(inputs = X_s_input, outputs = [x_s,loss_layer])
     return model
     
