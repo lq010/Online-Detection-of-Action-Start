@@ -6,4 +6,4 @@ weight=weights.02-2.20.hdf5
 #the path of the videos
 video_dir=/media/lq/C13E-1ED0/dataset/THUMOS/111
 
-python -m predict.predict -d=$dir -w=$weight -v=$video_dir
+python -m predict.predict -d=$dir -w=$weight -v=$video_dir 
