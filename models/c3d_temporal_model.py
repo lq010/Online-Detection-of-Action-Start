@@ -97,7 +97,7 @@ def conv_fc7(X_input):
 
     #FC6
     x = FC6(x)
-    x = Drop6(x)
+    # x = Drop6(x)
 
     #FC7
     x = FC7(x)
@@ -127,7 +127,7 @@ def c3d_temportal_model(input_shape, nb_classes):
     
     x_s = Drop7(x_s_7)
     #FC8
-    x_s = Dense(nb_classes,activation='softmax', name = 'fc8')(x_s)
+    x_s = Dense(nb_classes, activation='softmax', name = 'fc8')(x_s)
         
     dist = Lambda(lambda x: (x[0]-x[1]), name='temporal')([x_s_7,x_f_7])
     

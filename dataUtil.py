@@ -42,7 +42,7 @@ def preprocess_input(input_dict, windows_length):
                 exclusive.append(n)
             #only action ,min(a,leading_frame_of_last_window)=> the annotation is out of range,
             for n in range(start_frame +1 , min(end_frame-windows_length +1,leading_frame_of_last_window)):
-                follow_non_start_frame = n + windows_length
+                follow_non_start_frame = n  #the follow window of action window is itself, same for BG
                 # follow_instance_label = instance_label if (follow_non_start_frame+windows_length -1 ) <= end_frame else 0
                 A_windows.append([videoName, n, instance_label, follow_non_start_frame]) # , follow_instance_label]) #
                 exclusive.append(n)
@@ -53,7 +53,7 @@ def preprocess_input(input_dict, windows_length):
         for n in range(leading_frame_of_last_window):
             if n in exclusive:
                 continue
-            BG_windows.append([videoName, n, 0, n+windows_length, 0]) #
+            BG_windows.append([videoName, n, 0, n, 0]) #
 
     # random.shuffle(AS_windows)
     # random.shuffle(non_AS_windows)
@@ -104,23 +104,27 @@ def load_val_data():
 
 
 if __name__ == "__main__":
-    import time
-    start = time.time()
-    with open(train_file) as f:
-        train_anno = json.load(f)
-    a = preprocess_input(train_anno, windows_length)
+    val_AS_windows, val_A_windows, val_BG_windows = load_val_data() 
+    print(len(val_AS_windows))
+    print(len(val_A_windows))
+    print(len(val_BG_windows))
+    # import time
+    # start = time.time()
+    # with open(train_file) as f:
+    #     train_anno = json.load(f)
+    # a = preprocess_input(train_anno, windows_length)
 
-    end = time.time()
-    print(end - start)
+    # end = time.time()
+    # print(end - start)
     
-    start = time.time()
+    # start = time.time()
     
-    b = load_train_data()
-    end = time.time()
-    print(end - start)
+    # b = load_train_data()
+    # end = time.time()
+    # print(end - start)
 
-    print(type(a))
-    print(type(b))
-    print(a==b)
-    print(len(a[0]))
-    print(len(b[0]))
+    # print(type(a))
+    # print(type(b))
+    # print(a==b)
+    # print(len(a[0]))
+    # print(len(b[0]))

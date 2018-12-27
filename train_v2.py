@@ -23,6 +23,8 @@ import util
 import time
 
 from keras.callbacks import CSVLogger
+from src.batch_generator import train_batch_generator_AS_nonAS_1_1 as train_batch_generator
+from src.batch_generator import val_batch_generator
 
 import tensorflow as tf
 def plot_history(history, result_dir):
@@ -47,141 +49,6 @@ def plot_history(history, result_dir):
     plt.close()
 
 
-# def save_history(history, result_dir):
-#     loss = history.history['loss']
-#     fc8_loss = history.history['fc8_loss']
-#     temporal_loss = history.history['temporal_loss']
-#     acc = history.history['fc8_acc']
-#     val_loss = history.history['val_loss']
-#     val_fc8_loss = history.history['val_fc8_loss']
-#     val_fc8_acc = history.history['val_fc8_acc']
-#     nb_epoch = len(acc)
-
-#     with open(os.path.join(result_dir, 'result.txt'), 'w') as fp:
-#         fp.write('epoch\tloss\tfc8_loss\ttemporal_loss\tacc\tval_loss\tval_fc8_loss\tval_acc\n')
-#         for i in range(nb_epoch):
-#             fp.write('{}\t{}\t{}\t{}\t{}\n'.format(
-#                 i, loss[i], acc[i], val_loss[i], val_acc[i]))
-#         fp.close()
-
-        
-def process_batch(windows, windows_length, img_path, train=True):
-    N = len(windows)
-    X_s = np.zeros((N,windows_length,112,112,3),dtype='float32') #start windows
-    X_s_labels = np.zeros(N,dtype='int')
-    X_f =  np.zeros((N,windows_length,112,112,3),dtype='float32') #follow up windows
-    # X_f_labels = np.zeros(N,dtype='int')
-    for i in range(len(windows)):
-        window = windows[i]
-        path = window[0]
-        start_frame = window[1] 
-        label = window[2]
-        follow_frame = window[3]
-        # follow_label = windows[4]
-        imgs = os.listdir(img_path+path)
-        imgs.sort(key=str.lower)
-        
-        if train:
-            crop_x = random.randint(0, 15)
-            crop_y = random.randint(0, 58)
-            is_flip = random.randint(0, 1) # 1->flip
-            for j in range(windows_length):
-                '''start window'''
-                img_s = imgs[start_frame + j]
-                image_s = cv2.imread(img_path + path + '/' + img_s)                    
-                image_s = cv2.resize(image_s, (171, 128))
-                '''follow up window'''
-                img_f = imgs[follow_frame + j]###                
-                image_f = cv2.imread(img_path + path + '/' + img_f)
-                image_f = cv2.resize(image_f, (171, 128))
-
-                if is_flip == 1:
-                    image_s = cv2.flip(image_s, 1)
-                    image_f = cv2.flip(image_s, 1)
-                X_s[i][j][:][:][:] = image_s[crop_x:crop_x + 112, crop_y:crop_y + 112, :]
-                X_f[i][j][:][:][:] = image_f[crop_x:crop_x + 112, crop_y:crop_y + 112, :]
-
-            X_s_labels[i] = label
-            # X_f_labels[i] = follow_label
-        else:
-            for j in range(windows_length):
-                img = imgs[start_frame + j]
-                image_s = cv2.imread(img_path + path + '/' + img)
-                image_s = cv2.resize(image_s, (171, 128))
-                X_s[i][j][:][:][:] = image_s[8:120, 30:142, :]
-                img = imgs[follow_frame + j]
-                image_f = cv2.imread(img_path + path + '/' + img)
-                image_f = cv2.resize(image_f, (171, 128))
-                X_f[i][j][:][:][:] = image_f[8:120, 30:142, :]
-            X_s_labels[i] = label
-            # X_f_labels[i] = follow_label
-    return X_s, X_f,  X_s_labels
-
-
-
-def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
-    """
-    input data generator
-    """
-    #1/2 AS, 1/4 A, 1/4 BG
-    AS_size = batch_size >> 1
-    A_size = AS_size >> 1
-    BG_size = batch_size - AS_size - A_size
-
-    random.shuffle(AS_windows)
-    random.shuffle(A_windows)
-    random.shuffle(BG_windows)
-
-    N_AS = len(AS_windows)
-    index_AS = 0
-    index_A = 0
-    index_BG = 0
-    while True:
-        for i in range(N_iterations):
-            a_AS = index_AS
-            b_AS = a_AS + AS_size
-            a_A = index_A
-            b_A = a_A + A_size
-            a_BG = index_BG 
-            b_BG = a_BG + BG_size
-            if b_AS > N_AS:
-                print("\nAS windows, index out of range")
-                index_AS = 0
-                a_AS = 0 
-                b_AS = a_AS+AS_size
-                random.shuffle(AS_windows)
-
-            batch_windows = AS_windows[a_AS:b_AS] + A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
-            index_A = b_A
-            index_AS = b_AS
-            index_BG = b_BG
-            random.shuffle(batch_windows)
-            
-            X_s, X_f, X_s_labels = process_batch(batch_windows, windows_length, img_path, train=True)
-            X_s /= 255.
-            X_f /= 255.
-            Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
-            
-            inputs = [X_s, X_f]
-            yield (inputs, [Y,Y])# the second 'Y' is useless
-            # yield X_s, Y
-
-def val_batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
-    N = (len(AS_windows)+batch_size)//2    
-    windows = AS_windows + A_windows[:N] + BG_windows[:N]
-    while True:
-        for i in range(N_iterations):
-            a = i*batch_size
-            b = a+batch_size
-            batch_windows = windows[a:b]
-            X_s, X_f, X_s_labels = process_batch(batch_windows, windows_length, img_path, train=False)
-            X_s /= 255.
-            X_f /= 255.
-            Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
-            inputs = [X_s, X_f]
-            yield (inputs, [Y, Y])# the second 'Y' is useless
-
-# placeholder loss
 def zero_loss(y_true, y_pred):
     return K.zeros_like(y_pred)
 
@@ -203,7 +70,7 @@ def main(id):
 
     def my_l2 (y_true,y_pred):
         loss = tf.nn.l2_loss(y_pred)
-        return loss/batch_size
+        return loss
 
     # Setting the Learning rate multipliers
     LR_mult_dict = {}
@@ -225,35 +92,34 @@ def main(id):
     # sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
     opt = adam 
     loss_weights = [1,0.1]
-    model.compile(loss=['categorical_crossentropy',my_l2],loss_weights=loss_weights, optimizer=opt, metrics=['accuracy'])
+    model.compile(loss=['categorical_crossentropy', my_l2], loss_weights=loss_weights, optimizer=opt, metrics=['accuracy'])
     print('loading weight: {}'.format(model_weight_filename))
     model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
     model.summary()
 
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_A_windows, train_BG_windows = load_train_data() # load train data
+    val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
+
+    # train_AS_windows, train_A_windows, train_BG_windows = train_AS_windows[:32], train_A_windows[:100], train_BG_windows[:120]
+    # val_AS_windows, val_A_windows, val_BG_windows =val_AS_windows[:20], val_A_windows[:120], val_BG_windows[:120]
+
     N_train_samples = len(train_AS_windows) * 2
     N_train_iterations = N_train_samples // batch_size
 
-    val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
-
     N_val_samples = len(val_AS_windows)*2
-    # N_val_samples = len(val_AS_windows) << 1
     N_val_iterations = N_val_samples//batch_size
 # ####################################
     print("--#train AS windows: "+ str(len(train_AS_windows)) +" #train A windows: "+str(len(train_A_windows))+" #train BG windows: "+str(len(train_BG_windows)))
     print("-N_val_samples:"+str(N_val_samples)+ 
             "\n--#val AS windows: "+ str(len(val_AS_windows)) + " #val A windows: "+ str(len(val_A_windows))+ " #val BG windows: "+ str(len(val_BG_windows)))   
  
-    a=batch_generator(train_AS_windows, train_A_windows, train_BG_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path)    
-    # for i in range(N_train_iterations):
+    # a=train_batch_generator(train_AS_windows, train_A_windows, train_BG_windows, windows_length, batch_size, N_train_iterations, N_classes,img_path)    
+    # for i in range(N_train_iterations+1):
     #     print("# " + str(i))
     #     length = next(a)
-    #     try:    
-    #         assert length == batch_size
-    #     except AssertionError:
-    #         print("error:{}".format(len(test_data)))
-    #         return
+    # exit(0)
+
     # test_data= next(a)
     # print(str(test_data))
     # exit()
@@ -266,11 +132,12 @@ def main(id):
 #     # plt.imshow(test_data[0])
 #     # plt.show()
     # val_AS_windows, val_A_windows, val_BG_windows = val_AS_windows[:16], val_A_windows[:8], val_BG_windows[:8]
+
 # ##################################
 
     result_dir = './results/adam_temporal_{}/'.format(id)
-    best_weight_dir = result_dir+ 'best_weight' 
-    best_weight_name = best_weight_dir + '/weights.{epoch:02d}-{val_loss:.2f}.hdf5'
+    best_weight_dir = result_dir+ 'weights' 
+    best_weight_name = best_weight_dir + '/weights.{epoch:02d}-{val_loss:.3f}.hdf5'
     if not os.path.isdir(best_weight_dir):
         os.makedirs(best_weight_dir)
     if not os.path.exists(best_weight_dir):
@@ -278,17 +145,20 @@ def main(id):
     desp = result_dir+'desp.txt'
     with open(desp,'w') as f:
         f.write('batch size: {}\nbase_lr: {} \ntrain_samples:{} \nval_samples:{}\n '.format(batch_size,base_lr,N_train_samples,N_val_samples))
-        f.write('loss_weight:{}'.format(loss_weights))
+        f.write('loss_weight:{}\n'.format(loss_weights))
+        f.write('init_weiht: {}\n'.format(model_weight_filename))
+        f.write("batch: {}\n".format(train_batch_generator))
     # callbacks
     csv_logger = CSVLogger(result_dir +'/log.csv', separator=',')
     checkpointer = ModelCheckpoint(filepath=best_weight_name, verbose=1, save_best_only=False,save_weights_only=True)
-    NAME = "THUMOS-{}".format(int(time.time()))
-    tbCallBack = callbacks.TensorBoard(log_dir="./log/{}".format(NAME), histogram_freq=0, write_graph=True, write_images=True)
-    train_generator = batch_generator(train_AS_windows, train_A_windows, train_BG_windows,
+    # NAME = "THUMOS-{}".format(int(time.time()))
+    log_dir = os.path.join(result_dir,'log')
+    tbCallBack = callbacks.TensorBoard(log_dir=log_dir, histogram_freq=0, write_graph=True, write_images=True)
+    train_generator = train_batch_generator(train_AS_windows, train_A_windows, train_BG_windows,
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path)
     val_generator = val_batch_generator(val_AS_windows, val_A_windows, val_BG_windows,
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path)
-
+                                                
     history = model.fit_generator(train_generator,
                                   steps_per_epoch = N_train_iterations,
                                   epochs = epochs,
@@ -299,8 +169,6 @@ def main(id):
     
 
     plot_history(history, result_dir)
-    # save_history(history, result_dir)
-    model.save_weights(result_dir +'/'+'weights_c3d_temporal.hdf5')
 
 
 if __name__ == '__main__':

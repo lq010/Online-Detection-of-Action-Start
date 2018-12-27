@@ -72,8 +72,6 @@ def process_batch(windows, windows_length, img_path, isTrain):
         path = window[0]
         start_frame = window[1] 
         label = window[2]
-        # follow_frame = window[3]
-        # follow_label = windows[4]
 
         imgs = os.listdir(img_path+path)
         imgs.sort(key=str.lower)  
@@ -85,7 +83,6 @@ def process_batch(windows, windows_length, img_path, isTrain):
             '''start window'''
             img_s = imgs[start_frame + j]
             image_s = cv2.imread(img_path + path + '/' + img_s)
-            # image_s = cv2.cvtColor(image_s, cv2.COLOR_BGR2RGB)
             image_s = cv2.resize(image_s, (171,128))
             if isTrain and is_flip == 1:
                 image_s = cv2.flip(image_s, 1)
@@ -99,45 +96,37 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
     """
     input data generator
     """
-    #1/2 AS, 1/4 A, 1/4 BG
-    even_AS_size = batch_size >> 1
-    even_A_size = even_AS_size >> 1
-    even_BG_size = batch_size - even_AS_size - even_A_size
+    #1/2 AS, 1/2 nonAS
+    non_AS_windows = A_windows + BG_windows
 
+    AS_size = batch_size//2
+    non_AS_size = batch_size - AS_size
+    N_AS = len(AS_windows)
 
     while True:
         random.shuffle(AS_windows)
-        random.shuffle(A_windows)
-        random.shuffle(BG_windows)       
+        random.shuffle(non_AS_windows)
         index_AS = 0
-        index_A = 0
-        index_BG = 0
+        index_non_AS = 0
         for i in range(N_iterations):
             batch_windows = []
-            # if i%2 == 0: # even, 1/2 AS, 1/4 A, 1/4 BG
             a_AS = index_AS
-            b_AS = a_AS + even_AS_size
-            a_A = index_A
-            b_A = a_A + even_A_size
-            a_BG = index_BG 
-            b_BG = a_BG + even_BG_size
+            b_AS = a_AS + AS_size
+            a_non_AS = index_non_AS
+            b_non_AS = a_non_AS + non_AS_size
+
             if b_AS > N_AS:
-                print("\nAS windows, index out of range")
+                # print("\nAS windows, index out of range {}".format(i))
                 index_AS = 0
                 a_AS = 0 
-                b_AS = a_AS+even_AS_size
+                b_AS = a_AS+AS_size
                 random.shuffle(AS_windows)
-            batch_windows = AS_windows[a_AS:b_AS] + A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
-            # else: #odd, 1/2 A, 1/2 BG
-            #     a_A = index_A
-            #     b_A = a_A + odd_A_size
-            #     a_BG = index_BG 
-            #     b_BG = a_BG + odd_BG_size
-            #     batch_windows = A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
-
-            index_A = b_A
+            # print("{}as    {}:{}".format(i,a_AS,b_AS))
+            # print("{}nonas {}:{}".format(i,a_non_AS,b_non_AS))
+            batch_windows = AS_windows[a_AS:b_AS] +non_AS_windows[a_non_AS:b_non_AS]
+         
             index_AS = b_AS
-            index_BG = b_BG
+            index_non_AS = b_non_AS
                        
             random.shuffle(batch_windows)
             
