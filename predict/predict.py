@@ -142,6 +142,7 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
                     print('Could not be read the video {}'.format(video_id))
                     continue
                 # X = X - mean
+                tic = time.time()
                 prediction = []
                 for i in range(len(X)-length+1):
                     inputs = X[i:i+length]
@@ -150,9 +151,9 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
                     inputs = np.expand_dims(inputs, axis=0)
                     Y = model.predict_on_batch(inputs)
                     prediction.append(Y)
-
+                toc = time.time()
                 data_save_queue.put((video_id, prediction))
-                print("video :{} -done!".format(video_id))
+                print("video :{} -done! {}s".format(video_id, toc-tic))
             print('prediction task stopped')
 
     class saver_task(threading.Thread):
