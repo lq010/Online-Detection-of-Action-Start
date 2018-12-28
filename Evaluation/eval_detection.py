@@ -151,7 +151,8 @@ class THUMOSdetection(object):
             print ('[RESULTS] Performance on Thumos detection task.')
             print ('action indexes: {}'.format(self.activity_index))
             for i in range(len(self.mAP)):
-                print("temporal offset {}:\n \t{}".format(self.tOffset_thresholds[i],self.ap[i]))
+                print("temporal offset {}:".format(self.tOffset_thresholds[i]))
+                #print('\t{}'.format(self.ap[i]))
                 print('\tmap: {}'.format(self.mAP[i]))
             print ('\nAverage-mAP: {}'.format(self.average_mAP))
 

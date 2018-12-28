@@ -19,20 +19,19 @@ from LR_Adam import Adam
 from LR_SGD import SGD
 import queue
 
-def predict_videos(videos_dir, output_dir, batch_size, num_threads,
-                     queue_size, num_gpus, weights_path):
+def predict_videos(videos_dir, output_file, weights_file, 
+                        batch_size, num_threads, queue_size, num_gpus):
+    
     # Defining variables
     resize_size=(128,171)
     input_size = (112, 112)
     length = 16
     wait_time = 0.1
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
-    output_path = os.path.join(output_dir, 'video_features.hdf5')
-    mode = 'r+' if os.path.exists(output_path) else 'w'
+
+    mode = 'r+' if os.path.exists(output_file) else 'w'
     # Extract the ids of the videos already predicted 
-    with h5py.File(output_path, mode) as output_file:
-        predicted_videos = output_file.keys()
+    with h5py.File(output_file, mode) as predictions_file:
+        predicted_videos = predictions_file.keys()
         videos_ids = [v[:-4] for v in os.listdir(videos_dir) if v[-4:] == '.mp4']
         # Lets remove from the list videos_ids, the ones already predicted
         videos_ids_to_predict = list(set(videos_ids) - set(predicted_videos))
@@ -41,6 +40,9 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
         print('Total number of videos: {}'.format(len(videos_ids)))
         print('Videos already predicted: {}'.format(len(predicted_videos)))
         print('Videos to predict: {}'.format(nb_videos))
+    if nb_videos == 0:
+        print('all videos are predicted!!!')
+        exit()
 
     # Creating Parallel Fetching Video Data
     print('Creating {} threads to fetch video data'.format(num_threads))
@@ -63,7 +65,7 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
         def run(self):
             generator = VideoGenerator(
                 self.videos_ids_to_predict,
-                self.videos_dir, 
+                self.videos_dir,
                 self.extension,
                 self.length,
                 self.resize_size)
@@ -75,11 +77,16 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
                             generator_output = next(generator)
                         except ValueError:
                             continue
+                        except MemoryError:
+                            print("memory error while fetching video.".format())
+                            print(traceback.print_exc())
+                            continue
                         data_gen_queue.put(generator_output)
                     else:
                         time.sleep(wait_time)
                 except StopIteration:
                     print('End')
+                    keep = False
                     break
                 except Exception:
                     keep = False
@@ -115,13 +122,13 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
             base_lr = 0.00001
             adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
             sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
-            opt = sgd 
+            opt = adam 
             model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
         
             print('Compiling done!')
-            print(weights_path)
-            model.load_weights(weights_path)
-            print("wight <{}> loaded.".format(weights_path))
+            print('laoding weight-------{}'.format(weights_file))
+            model.load_weights(weights_file)
+            print("wight <{}> loaded.".format(weights_file))
             print('Starting extracting features')
 
             while not (_stop_all_generators.is_set() and data_gen_queue.empty()):
@@ -141,19 +148,44 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
                 if X is None:
                     print('Could not be read the video {}'.format(video_id))
                     continue
-                # X = X - mean
+                              
                 tic = time.time()
                 prediction = []
-                for i in range(len(X)-length+1):
-                    inputs = X[i:i+length]
-                    inputs = inputs.astype(float) #TODO, float64  ??????
-                    inputs /=255.
-                    inputs = np.expand_dims(inputs, axis=0)
+                '''1 window pre batch'''
+                # for i in range(len(X)-length+1):
+                #     inputs = X[i:i+length]
+                #     inputs = inputs.astype(np.float32) 
+                #     inputs /=255.
+                #     inputs = np.expand_dims(inputs, axis=0)
+                #     Y = model.predict_on_batch(inputs)
+                #     prediction.append(Y)
+                ''' > 1 window '''
+                indexes = list(range(len(X)-length+1))
+                batch_index = indexes[::batch_size]
+                for index in batch_index[:-1]:
+                    inputs = []
+                    for j in range(batch_size):
+                        window = X[index+j : index+j+length]
+                        
+                        window /= 255.
+                        inputs.append(window)
+                    inputs = np.array(inputs)
                     Y = model.predict_on_batch(inputs)
-                    prediction.append(Y)
+                    prediction.extend(Y)
+                last_batch_index = batch_index[-1]
+                inputs = []
+                for index in range(last_batch_index,len(X)-length+1):
+                    window = X[index : index+length]
+                    
+                    window /= 255.
+                    inputs.append(window)
+                inputs = np.array(inputs)
+                Y = model.predict_on_batch(inputs)
+                prediction.extend(Y)
                 toc = time.time()
+
                 data_save_queue.put((video_id, prediction))
-                print("video :{} -done! {}s".format(video_id, toc-tic))
+                print("video :{} -done!  {:.2f} second(s)".format(video_id, toc-tic))
             print('prediction task stopped')
 
     class saver_task(threading.Thread):
@@ -177,7 +209,7 @@ def predict_videos(videos_dir, output_dir, batch_size, num_threads,
                     print('Something went wrong')
                     continue
             
-                with h5py.File(output_path, 'r+') as f:
+                with h5py.File(output_file, 'r+') as f:
                     f.create_dataset(video_id, data=predictions, dtype='float32')
                 self.counter += 1
                 print('Save prediction: {} ({}/{})'.format(video_id,self.counter,nb_videos))
@@ -229,20 +261,28 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='predict the output with the trained model')
     parser.add_argument(
-        '-d',
+        '-v',
         '--videos-dir',
         type=str,
-        dest='directory',
+        dest='video_dir',
         default='/media/lq/C13E-1ED0/dataset/THUMOS/tmptest',
         help='videos directory (default: %(default)s)')
     parser.add_argument(
-        '-o',
-        '--output-dir',
+        '-d',
+        '--weight-dir',
         type=str,
-        dest='output',
+        dest='weight_dir',
         default='data/dataset',
         help=
         'directory where to store the predictions (default: %(default)s)'
+    )
+    parser.add_argument(
+        '-w',
+        '--weight-name',
+        type=str,
+        dest='weight_name',
+        help=
+        'name of the weights'
     )
     parser.add_argument(
         '-b',
@@ -263,7 +303,7 @@ if __name__ == '__main__':
         '--queue-size',
         type=int,
         dest='queue_size',
-        default=2,
+        default=1,
         help=
         'maximum number of elements at the queue when fetching videos (default %(default)s)'
     )
@@ -276,14 +316,16 @@ if __name__ == '__main__':
         help=
         'number of gpus to use for predicting (default: %(default)s)')
 
-    parser.add_argument(
-        '-w',
-        '--weight-path',
-        type=str,
-        dest = 'weights_path',
-        help = 
-        'the path of weight to be loaded.')
     args = parser.parse_args()
 
-    predict_videos(args.directory, args.output, args.batch_size,
-                     args.num_threads, args.queue_size, args.num_gpus,args.weights_path)
+    weights_file = os.path.join(args.weight_dir, args.weight_name)
+    prediction_file_name = 'predictions_' + args.weight_name
+    output_file = os.path.join(args.weight_dir, prediction_file_name)
+
+    predict_videos(videos_dir = args.video_dir, 
+                    output_file = output_file, 
+                    weights_file = weights_file, 
+                        batch_size = args.batch_size,
+                        num_threads = args.num_threads,
+                        queue_size = args.queue_size,
+                        num_gpus = args.num_gpus)

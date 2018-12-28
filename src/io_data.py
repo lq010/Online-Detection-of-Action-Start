@@ -67,9 +67,11 @@ def video_to_array(video_path,
         if resize:
             # The resize of CV2 requires pass firts width and then height
             frame = cv2.resize(frame, (resize[1], resize[0]))
+            frame = frame[8:120,30:142,:]
         frames.append(frame)
-
-    video = np.array(frames, dtype=np.float32)
+    cap.release()
+    video = np.array(frames,dtype=np.float32)
+    # video = np.array(frames, dtype=np.float32)
     if dim_ordering == 'th':
         video = video.transpose(3, 0, 1, 2)
     return video

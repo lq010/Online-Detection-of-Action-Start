@@ -45,11 +45,12 @@ def get_model(s = False, backend = 'tf'):
     x = Flatten()(x)
     # FC layers group
     x = Dense(4096, activation='relu', name='fc6')(x)
-    x = Dropout(.5)(x)
+    # x = Dropout(.5)(x)
     x = Dense(4096, activation='relu', name='fc7')(x)
     x = Dropout(.5)(x)
     x = Dense(nb_classes, activation='softmax', name='fc8')(x)
 
+    print(x.shape)
     model = Model(X_input, x)
     return model
 
