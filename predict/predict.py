@@ -148,7 +148,7 @@ def predict_videos(videos_dir, output_file, weights_file,
                 if X is None:
                     print('Could not be read the video {}'.format(video_id))
                     continue
-                              
+                    
                 tic = time.time()
                 prediction = []
                 '''1 window pre batch'''
@@ -160,14 +160,13 @@ def predict_videos(videos_dir, output_file, weights_file,
                 #     Y = model.predict_on_batch(inputs)
                 #     prediction.append(Y)
                 ''' > 1 window '''
+                X /= 255.
                 indexes = list(range(len(X)-length+1))
                 batch_index = indexes[::batch_size]
                 for index in batch_index[:-1]:
                     inputs = []
                     for j in range(batch_size):
                         window = X[index+j : index+j+length]
-                        
-                        window /= 255.
                         inputs.append(window)
                     inputs = np.array(inputs)
                     Y = model.predict_on_batch(inputs)
@@ -176,8 +175,6 @@ def predict_videos(videos_dir, output_file, weights_file,
                 inputs = []
                 for index in range(last_batch_index,len(X)-length+1):
                     window = X[index : index+length]
-                    
-                    window /= 255.
                     inputs.append(window)
                 inputs = np.array(inputs)
                 Y = model.predict_on_batch(inputs)

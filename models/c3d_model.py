@@ -52,7 +52,6 @@ def get_model(s = False, backend = 'tf'):
     x = Dropout(.5)(x)
     x = Dense(nb_classes, activation='softmax', name='fc8')(x)
 
-    print(x.shape)
     model = Model(X_input, x)
     return model
 
