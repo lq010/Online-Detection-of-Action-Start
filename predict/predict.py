@@ -148,9 +148,7 @@ def predict_videos(videos_dir, output_file, weights_file,
                 if X is None:
                     print('Could not be read the video {}'.format(video_id))
                     continue
-                
-                
-
+                    
                 tic = time.time()
                 prediction = []
                 '''1 window pre batch'''
