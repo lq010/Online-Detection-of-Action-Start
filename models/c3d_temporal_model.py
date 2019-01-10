@@ -97,7 +97,7 @@ def conv_fc7(X_input):
 
     #FC6
     x = FC6(x)
-    # x = Drop6(x)
+    x = Drop6(x)
 
     #FC7
     x = FC7(x)
