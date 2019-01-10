@@ -61,7 +61,7 @@ Flatten5 = Flatten()
 #FC6
 FC6 = Dense(4096, activation='relu', name='fc6')
 seed = np.random.randint(10e6)
-Drop6 = Dropout(dropout_ratio, name='dropout_6', seed = seed)
+Drop6 = Dropout(dropout_ratio, name='dropout_6')
 
 #FC7
 FC7 = Dense(4096, activation='relu', name='fc7')

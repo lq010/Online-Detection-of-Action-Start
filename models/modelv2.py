@@ -85,7 +85,7 @@ def conv_fc7(X_input):
     #layer Conv5
     x = Conv5a(x)
     x = Conv5b(x)
-    #x = zPadding5(x)
+    x = zPadding5(x)
     x = Pool5(x)
     x = Flatten5(x)
 

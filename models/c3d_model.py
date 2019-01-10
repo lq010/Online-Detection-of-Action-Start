@@ -1,6 +1,6 @@
 from keras import Input
 from keras.models import Sequential, Model
-from keras.layers.core import Dense, Dropout, Flatten
+from keras.layers.core import Dense, Dropout, Flatten, Activation
 from keras.layers.convolutional import  Convolution3D, MaxPooling3D, ZeroPadding3D
 from keras.regularizers import l2
 
@@ -42,11 +42,13 @@ def get_model(s = False, backend = 'tf'):
     x = ZeroPadding3D(padding=((0, 0), (0, 1), (0, 1)), name='zeropad5')(x)
     x = MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2),
                            padding='valid', name='pool5')(x)
-    x = Flatten()(x)
+    x = Flatten(name='flatten_1')(x)
     # FC layers group
-    x = Dense(4096, activation='relu', name='fc6')(x)
-    # x = Dropout(.5)(x)
-    x = Dense(4096, activation='relu', name='fc7')(x)
+    x = Dense(4096, name='fc6')(x)
+    x = Activation('relu', name='fc6_relu')(x)
+    x = Dropout(.5)(x)
+    x = Dense(4096, name='fc7')(x)
+    x = Activation('relu', name='fc7_relu')(x)
     x = Dropout(.5)(x)
     x = Dense(nb_classes, activation='softmax', name='fc8')(x)
 
@@ -58,5 +60,5 @@ def get_model(s = False, backend = 'tf'):
 if __name__ == '__main__':
     model = get_model()
     model.summary()
-    from keras.utils import plot_model
-    plot_model(model, to_file='model_v2.png', show_shapes=True)
+    # from keras.utils import plot_model
+    # plot_model(model, to_file='model_v2.png', show_shapes=True)
