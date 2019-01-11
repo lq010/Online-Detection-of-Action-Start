@@ -35,34 +35,45 @@ class GAN(object):
         self.channels = channels
 
         self.shape = (self.width, self.height, self.channels)
+        self.optimizer = Adam(lr=1e-5, decay=0.00005)
 
         #init the c3d model
         self.c3d_model = c3d_model.get_model()
         if c3d_weight == None:
             raise Exception('weights is requited!')
-        self.c3d_model.load_weights(c3d_weight)
+        # self.c3d_model.load_weights(c3d_weight)
         convLayers = ['conv1','conv2','conv3a','conv3b','conv4a','conv4b','conv5a','conv5b']
         for layer in convLayers:
             self.c3d_model.get_layer(layer).trainable = False
         self.add_outputs(1)
-        self.c3d_model.summary()
+        self.c3d_model.compile(loss='categorical_crossentropy', optimizer=self.optimizer)
         #fixed c3d (conv1 - pool5)
         self.fixed_c3d = Model(inputs=self.c3d_model.input,
                                 outputs=self.c3d_model.get_layer('flatten_1').output)
-        self.fixed_c3d.summary()
+          
         #generator    
-        self.G = self.__generator()
-        self.G.summary()
+        self.G = self.__generator()      
         # self.G.compile(loss='', optimizer=self.optimizer)
         #discriminator
         self.D = self.__discriminator()
-        self.optimizer = Adam(lr=1e-5, decay=0.00005)
-        self.D.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['accuracy'])
-        self.D.summary()
-        self.GAN = self.__stacked_generator_discriminator()
-        self.GAN.summary()
+        self.GAN = self.__stacked_generator_discriminator()   
+        
+        for layer in self.D.layers:
+            layer.trainable = False
+        self.D.trainable = False   
         self.GAN.compile(loss=self.loss_matching, optimizer=self.optimizer)
+        
+        
+        for layer in self.D.layers:
+            layer.trainable = True
+        self.D.trainable = True       
+        self.D.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['accuracy'])
 
+        self.c3d_model.summary()
+        self.fixed_c3d.summary()
+        self.G.summary()
+        self.D.summary()
+        self.GAN.summary()
     def loss_matching(self, y_true, y_pred):
         loss = K.mean(K.abs(y_pred))
         return loss
@@ -101,7 +112,6 @@ class GAN(object):
 
     def __stacked_generator_discriminator(self):
 
-        self.D.trainable = False
         #output from generator
         gan_input_fake = Input(shape=(self.latent_dim,))
         fake_feature = self.G(gan_input_fake)
