@@ -4,11 +4,11 @@ from keras.layers.core import Dense, Dropout, Flatten, Activation
 from keras.layers.convolutional import  Convolution3D, MaxPooling3D, ZeroPadding3D
 from keras.regularizers import l2
 
-def get_model(s = False, backend = 'tf'):
+def get_model(nb_classes=21):
     input_shape=(16, 112, 112, 3) # l, h, w, c
     X_input = Input(input_shape)
 
-    nb_classes = 20+1
+    
     #1st layer group 
     x = Convolution3D(64, (3, 3, 3), activation='relu',
                             padding='same', name='conv1',
