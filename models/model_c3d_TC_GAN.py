@@ -42,8 +42,9 @@ class GAN(object):
         self.channels = channels
         self.c3d_weights = c3d_weights
         self.shape = (self.width, self.height, self.channels)
-        self.optimizer = Adam(lr=1e-5, decay=0.00005)
-       
+        self.disc_optimizer = Adam(lr=1e-5, decay=0.00005)
+        self.gen_optimizer = Adam(lr=0.003, decay=0.00005)
+
         #init the c3d model
         self.c3d_model = c3d_model.get_model()
         if self.c3d_weights == None:
@@ -64,13 +65,13 @@ class GAN(object):
         
         #discriminator,
         self.D = self.__discriminator()
-        self.D.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['accuracy'])
+        self.D.compile(loss='categorical_crossentropy', optimizer=self.disc_optimizer, metrics=['accuracy'])
 
         #generator    
         self.G = self.__generator()      
         # self.G.compile(loss='', optimizer=self.optimizer)
         self.GAN = self.__stacked_generator_discriminator()   
-        self.GAN.compile(loss=self.loss_matching, optimizer=self.optimizer)
+        self.GAN.compile(loss=self.loss_matching, optimizer=self.gen_optimizer)
     
         self.c3d_model.summary()
         self.fixed_c3d.summary()
@@ -171,7 +172,8 @@ class GAN(object):
         desp = os.path.join(result_dir,'desp.txt')
         with open(desp, 'w') as f:
             f.write("c3d weights: {}\n".format(self.c3d_weights))
-            f.write("optimizer: {}\n".format(self.optimizer.get_config()))
+            f.write("disc_optimizer: {}\n".format(self.disc_optimizer.get_config()))
+            f.write("gen_optimizer: {}\n".format(self.gen_optimizer.get_config()))
         callback = callbacks.TensorBoard(log_dir=log_dir, batch_size=batch_size, histogram_freq=0, write_graph=True, write_images=True)
         callback.set_model(self.GAN)
         loss_names = ['disc_train_loss', 'disc_train_acc', 'gen_train_loss']
