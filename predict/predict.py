@@ -210,6 +210,7 @@ def predict_videos(videos_dir, output_file, weights_file,
                     f.create_dataset(video_id, data=predictions, dtype='float32')
                 self.counter += 1
                 print('Save prediction: {} ({}/{})'.format(video_id,self.counter,nb_videos))
+                sys.stdout.flush()
             if self.counter<nb_videos:
                 print("{} videos are not processed, please run it again.".format(nb_videos-self.counter))
             print("saver task stopped.")
