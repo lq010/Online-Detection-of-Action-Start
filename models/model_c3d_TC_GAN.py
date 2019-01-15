@@ -42,8 +42,8 @@ class GAN(object):
         self.channels = channels
         self.c3d_weights = c3d_weights
         self.shape = (self.width, self.height, self.channels)
-        self.disc_optimizer = Adam(lr=1e-5, decay=0.00005)
-        self.gen_optimizer = Adam(lr=0.003, decay=0.00005)
+        self.disc_optimizer = Adam(lr=1e-6, decay=0.00005)
+        self.gen_optimizer = Adam(lr=0.0005, decay=0.00005)
 
         #init the c3d model
         self.c3d_model = c3d_model.get_model()
@@ -152,7 +152,7 @@ class GAN(object):
                                                                 batch_size=batch_size//2,
                                                                 N_iterations=iterations,
                                                                 N_classes=self.n_classes+1,
-                                                            img_path=self.image_path)
+                                                                img_path=self.image_path)
         #real image generator for generator (AS only)
         gen_batch_generator = batch_generator_AS(AS_windows=train_AS_windows,
                                                     windows_length=self.length,
@@ -177,6 +177,7 @@ class GAN(object):
         callback = callbacks.TensorBoard(log_dir=log_dir, batch_size=batch_size, histogram_freq=0, write_graph=True, write_images=True)
         callback.set_model(self.GAN)
         loss_names = ['disc_train_loss', 'disc_train_acc', 'gen_train_loss']
+
         for cnt in tqdm(range(iterations)):         
             '''discriminator'''
             #Sample random points in the latent space
@@ -190,11 +191,10 @@ class GAN(object):
             combined_features = np.concatenate([generated_features, real_features])
 
             fake_labels = np.ones(batch_size//2)*(self.n_classes) #n_classes=21, 0=>BG, 1-20=>actions, 21=>fake
-
             fake_labels = np_utils.to_categorical(fake_labels, self.n_classes+1)
-
+            
             labels = np.concatenate([fake_labels, real_labels])
-        
+
             # Add random noise to the labels - important trick!
             # labels += 0.05 * np.random.random(labels.shape)
             d_loss, d_acc = self.D.train_on_batch(combined_features, labels)
