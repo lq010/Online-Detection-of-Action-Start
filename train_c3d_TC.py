@@ -23,7 +23,7 @@ import util
 import time
 
 from keras.callbacks import CSVLogger
-from src.batch_generator import train_batch_generator_AS_nonAS_1_1 as train_batch_generator
+from src.batch_generator import train_batch_generator_AS_A_BG_2_1_1 as train_batch_generator
 from src.batch_generator import val_batch_generator
 
 import tensorflow as tf
@@ -61,7 +61,7 @@ def main(id):
     model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
     N_classes = 20+1
     batch_size = 16
-    epochs = 2
+    epochs = 6
     input_shape = (16,112,112,3)
 
     windows_length = 16 #clip
@@ -91,10 +91,10 @@ def main(id):
     adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
     # sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
     opt = adam 
-    loss_weights = [1,0.1]
+    loss_weights = [1, 0.001]
     model.compile(loss=['categorical_crossentropy', my_l2], loss_weights=loss_weights, optimizer=opt, metrics=['accuracy'])
     print('loading weight: {}'.format(model_weight_filename))
-    model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
+    model.load_weights(model_weight_filename, by_name=True, skip_mismatch=True, reshape=True)
     model.summary()
 
     from dataUtil import load_train_data, load_val_data
@@ -146,27 +146,27 @@ def main(id):
     with open(desp,'w') as f:
         f.write('batch size: {}\nbase_lr: {} \ntrain_samples:{} \nval_samples:{}\n '.format(batch_size,base_lr,N_train_samples,N_val_samples))
         f.write('loss_weight:{}\n'.format(loss_weights))
-        f.write('init_weiht: {}\n'.format(model_weight_filename))
+        f.write('init_weight: {}\n'.format(model_weight_filename))
         f.write("batch: {}\n".format(train_batch_generator))
     # callbacks
     csv_logger = CSVLogger(result_dir +'/log.csv', separator=',')
     checkpointer = ModelCheckpoint(filepath=best_weight_name, verbose=1, save_best_only=False,save_weights_only=True)
     # NAME = "THUMOS-{}".format(int(time.time()))
     log_dir = os.path.join(result_dir,'log')
-    tbCallBack = callbacks.TensorBoard(log_dir=log_dir, histogram_freq=0, write_graph=True, write_images=True)
+    tbCallBack = callbacks.TensorBoard(log_dir=log_dir, batch_size=batch_size, histogram_freq=0, write_graph=True, write_images=True)
+   
     train_generator = train_batch_generator(train_AS_windows, train_A_windows, train_BG_windows,
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path)
     val_generator = val_batch_generator(val_AS_windows, val_A_windows, val_BG_windows,
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path)
                                                 
     history = model.fit_generator(train_generator,
-                                  steps_per_epoch = N_train_iterations,
-                                  epochs = epochs,
+                                  steps_per_epoch=N_train_iterations,
+                                  epochs=epochs,
                                   callbacks=[csv_logger, tbCallBack, checkpointer],
-                                  validation_data = val_generator,
-                                  validation_steps = N_val_iterations,
-                                  verbose=1)
-    
+                                  validation_data=val_generator,
+                                  validation_steps=N_val_iterations,
+                                  verbose=1)   
 
     plot_history(history, result_dir)
 
