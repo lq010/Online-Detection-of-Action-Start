@@ -33,7 +33,7 @@ def main():
     model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
     # model_weight_filename = '/media/lq/C13E-1ED0/dataset/THUMOS/result/adam_temporal/best_result/adam_temporal/weights.hdf5'
     c3d_TC_weights ='/home/lq/Documents/Thesis/Thesis/results/adam_temporal_8/weights/weights.02-2.111.hdf5'
-    c3d_TC_GAN_weights= '/home/lq/Documents/Thesis/Thesis/results/gan_2/weights/c3d_TC_GAN_21_outputs_it2500.hdf5'
+    c3d_TC_GAN_weights = '/home/lq/Documents/Thesis/Thesis/results/gan_2/weights/c3d_TC_GAN_21_outputs_it2500.hdf5'
     model.load_weights(c3d_TC_GAN_weights)
     # model.load_weights('results/weights_c3d.h5')
 
