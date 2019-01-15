@@ -1,1 +1,0 @@
-python -m predict.predict -w=/media/lq/C13E-1ED0/dataset/THUMOS/result/adam_temporal/best_result/adam_temporal/weights.hdf5 -o=/media/lq/C13E-1ED0/dataset/THUMOS/result/adam_temporal -d=/media/lq/C13E-1ED0/dataset/THUMOS/test
