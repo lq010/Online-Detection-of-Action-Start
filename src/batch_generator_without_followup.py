@@ -79,6 +79,52 @@ def batch_generator_AS_nonAS_1_1(AS_windows, A_windows, BG_windows, windows_leng
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
             yield X_s, Y
 
+def batch_generator_AS_A_BG_2_1_1(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
+    """
+    input data generator
+    """
+    #1/2 AS, 1/4 A, 1/4 BG
+    AS_size = batch_size >> 1
+    A_size = AS_size >> 1
+    BG_size = batch_size - AS_size - A_size
+    N_AS = len(AS_windows)
+
+    while True:
+        random.shuffle(AS_windows)
+        random.shuffle(A_windows)
+        random.shuffle(BG_windows)       
+        index_AS = 0
+        index_A = 0
+        index_BG = 0
+        for i in range(N_iterations):
+            batch_windows = []
+            # if i%2 == 0: # even, 1/2 AS, 1/4 A, 1/4 BG
+            a_AS = index_AS
+            b_AS = a_AS + AS_size
+            a_A = index_A
+            b_A = a_A + A_size
+            a_BG = index_BG 
+            b_BG = a_BG + BG_size
+            if b_AS > N_AS:
+                print("\nAS windows, index out of range")
+                index_AS = 0
+                a_AS = 0 
+                b_AS = a_AS+AS_size
+                random.shuffle(AS_windows)
+            batch_windows = AS_windows[a_AS:b_AS] + A_windows[a_A:b_A] + BG_windows[a_BG:b_BG]
+            
+            index_A = b_A
+            index_AS = b_AS
+            index_BG = b_BG
+                       
+            random.shuffle(batch_windows)
+            
+            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain= True)
+
+            X_s /= 255.
+            Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
+            yield X_s, Y
+
 def batch_generator_AS(AS_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
     """
     input data generator
