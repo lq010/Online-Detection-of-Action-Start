@@ -20,4 +20,4 @@ if __name__ == '__main__':
     gan = GAN(c3d_weights=args.pretrained_weights)
     if args.experiment_id == 'test':
         warnings.warn("You didn't set the experiment id, the default id is 0, previous result will be overwritten")
-    gan.train(iterations=5000, save_interval=2500, id=args.experiment_id)
+    gan.train(iterations=11, save_it=[1,6], id=args.experiment_id)

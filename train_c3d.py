@@ -103,7 +103,7 @@ def batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_siz
     even_AS_size = batch_size >> 1
     even_A_size = even_AS_size >> 1
     even_BG_size = batch_size - even_AS_size - even_A_size
-    N_AS - len(AS_windows)
+    N_AS = len(AS_windows)
 
     while True:
         random.shuffle(AS_windows)
