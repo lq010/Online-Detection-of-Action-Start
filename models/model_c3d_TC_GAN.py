@@ -7,7 +7,7 @@ import tensorflow as tf
 
 import keras.backend as K
 import keras.callbacks as callbacks
-from keras.layers import Input, Dense, Reshape, Flatten, Dropout, LeakyReLU, concatenate, Lambda
+from keras.layers import Input, Dense, Reshape, Flatten, Dropout, LeakyReLU, concatenate, Lambda, Activation
 from keras.layers import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 from keras.models import Model
@@ -19,7 +19,7 @@ plt.switch_backend('agg')   # allows code to run without a system DISPLAY
 
 from models import c3d_model
 from dataUtil import load_train_data, load_val_data
-from src.batch_generator_without_followup import batch_generator_AS_nonAS_1_1, batch_generator_AS
+from src.batch_generator_without_followup import batch_generator_AS_A_BG_2_1_1, batch_generator_AS
 from data import videoPaths as path
 
 
@@ -43,7 +43,7 @@ class GAN(object):
         self.c3d_weights = c3d_weights
         self.shape = (self.width, self.height, self.channels)
         self.disc_optimizer = Adam(lr=1e-6, decay=0.00005)
-        self.gen_optimizer = Adam(lr=0.0005, decay=0.00005)
+        self.gen_optimizer = Adam(lr=0.0006, decay=0.00005)
 
         #init the c3d model
         self.c3d_model = c3d_model.get_model()
@@ -53,7 +53,7 @@ class GAN(object):
             self.c3d_model.load_weights(self.c3d_weights)
         except OSError:
             print("the pretrained weights doesn't exist, please use <-h> to check usage")
-            exit() 
+            exit()
         convLayers = ['conv1','conv2','conv3a','conv3b','conv4a','conv4b','conv5a','conv5b']
         for layer in convLayers:
             self.c3d_model.get_layer(layer).trainable = False
@@ -80,7 +80,8 @@ class GAN(object):
         self.GAN.summary()
         
     def loss_matching(self, y_true, y_pred):
-        loss = K.mean(K.abs(y_pred))
+        # loss = K.mean(K.abs(y_pred))
+        loss = tf.nn.l2_loss(y_pred)
         return loss
 
     def __generator(self):
@@ -89,11 +90,11 @@ class GAN(object):
         generator_input = Input(shape=(self.latent_dim,))
         x = Dense(8192, name='fc1')(generator_input)
         x = BatchNormalization()(x)
-        x = LeakyReLU()(x)
+        x = Activation('relu')(x)
         #FC2
         x = Dense(8192, name='fc2')(x)
         x = BatchNormalization()(x)
-        x = LeakyReLU()(x)
+        x = Activation('relu')(x)
         
         model_gen = Model(generator_input, x)
 
@@ -139,17 +140,17 @@ class GAN(object):
         model_gan = Model(inputs=[gan_input_fake, real_feature],outputs=[matching])
         return model_gan
 
-    def train(self, iterations=5000, batch_size=16, save_interval=2500, id=0):
+    def train(self, iterations=5000, batch_size=16, save_it=[2500], id=0):
         #load the real data
         train_AS_windows, train_A_windows, train_BG_windows = load_train_data() # load train data
         val_AS_windows, val_A_windows, val_BG_windows = load_val_data() # load val data
 
         #real image generator for discriminator (AS + non AS)
-        disc_batch_generator = batch_generator_AS_nonAS_1_1(AS_windows=train_AS_windows,
+        disc_batch_generator = batch_generator_AS_A_BG_2_1_1(AS_windows=train_AS_windows,
                                                                 A_windows=train_A_windows,
                                                                 BG_windows=train_BG_windows,
                                                                 windows_length=self.length,
-                                                                batch_size=batch_size//2,
+                                                                batch_size=batch_size,
                                                                 N_iterations=iterations,
                                                                 N_classes=self.n_classes+1,
                                                                 img_path=self.image_path)
@@ -176,8 +177,8 @@ class GAN(object):
             f.write("gen_optimizer: {}\n".format(self.gen_optimizer.get_config()))
         callback = callbacks.TensorBoard(log_dir=log_dir, batch_size=batch_size, histogram_freq=0, write_graph=True, write_images=True)
         callback.set_model(self.GAN)
+        # loss_names = ['disc_train_loss_real', 'disc_train_acc_real', 'disc_train_loss_fake', 'disc_train_acc_fake', 'gen_train_loss']
         loss_names = ['disc_train_loss', 'disc_train_acc', 'gen_train_loss']
-
         for cnt in tqdm(range(iterations)):         
             '''discriminator'''
             #Sample random points in the latent space
@@ -188,17 +189,19 @@ class GAN(object):
             #real images
             real_images, real_labels = next(disc_batch_generator)
             real_features = self.fixed_c3d.predict(real_images)
-            combined_features = np.concatenate([generated_features, real_features])
 
             fake_labels = np.ones(batch_size//2)*(self.n_classes) #n_classes=21, 0=>BG, 1-20=>actions, 21=>fake
             fake_labels = np_utils.to_categorical(fake_labels, self.n_classes+1)
             
+            combined_features = np.concatenate([generated_features, real_features])
             labels = np.concatenate([fake_labels, real_labels])
 
             # Add random noise to the labels - important trick!
             # labels += 0.05 * np.random.random(labels.shape)
             d_loss, d_acc = self.D.train_on_batch(combined_features, labels)
-        
+            # d_loss_real, d_acc_real = self.D.train_on_batch(real_features, real_labels)
+            # d_loss_fake, d_acc_fake = self.D.train_on_batch(generated_features, fake_labels)
+
             '''generator (via the gan model, where the discriminator weights are frozen)'''
             random_latent_vectors = np.random.standard_normal(size=(batch_size, self.latent_dim))
 
@@ -209,9 +212,10 @@ class GAN(object):
                                                  [real_AS_labels]) #the labels are not used
 
             #tensorboard log                    
+            # logs = [d_loss_real, d_acc_real, d_loss_fake, d_acc_fake, g_loss]
             logs = [d_loss, d_acc, g_loss]          
             write_log(callback, loss_names, logs, cnt)
-            if cnt==save_interval:
+            if cnt in save_it:
                 self.save_weights(weight_dir, cnt)
             tqdm.write('iteration: {}, [Discriminator :: d_loss: {}, d_acc: {}], [ Generator :: loss: {}]'
                                                                                 .format(cnt, d_loss, d_acc, g_loss))
@@ -222,7 +226,7 @@ class GAN(object):
         #save weights
         out_22 = 'c3d_TC_GAN_22_outputs_it{}.hdf5'.format(iteration)
         self.c3d_model.save_weights(os.path.join(weight_dir,out_22))
-        self.GAN.save_weights(os.path.join(weight_dir,'GAN.hdf5'))
+        # self.GAN.save_weights(os.path.join(weight_dir,'GAN.hdf5'))
         #remove the last node from output layer
         # self.remove_last_output()
         # out_21 = 'c3d_TC_GAN_21_outputs_it{}.hdf5'.format(iteration)

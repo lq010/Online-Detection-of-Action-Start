@@ -5,7 +5,7 @@ from keras.models import Sequential, Model
 
 c3d_model = c3d_model.get_model(nb_classes=22)
 
-weights_path = '/home/lq/Documents/Thesis/Thesis/results/gan_3/weights/c3d_TC_GAN_22_outputs_it5000.hdf5'
+weights_path = '/home/lq/Documents/Thesis/Thesis/results/gan_test/weights/c3d_TC_GAN_22_outputs_it1000.hdf5'
 save_path = weights_path.replace('_22_outputs_', '_21_outputs_')
 n_classes =21
 
