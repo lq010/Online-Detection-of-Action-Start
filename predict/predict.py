@@ -15,8 +15,8 @@ import numpy as np
 import h5py
 from src.data import VideoGenerator
 
-from LR_Adam import Adam
-from LR_SGD import SGD
+from src.LR_Adam import Adam
+from src.LR_SGD import SGD
 import queue
 
 def predict_videos(videos_dir, output_file, weights_file, 
