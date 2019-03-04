@@ -19,7 +19,7 @@ import cv2
 import matplotlib
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
-import util
+# import util
 import time
 
 from keras.callbacks import CSVLogger
