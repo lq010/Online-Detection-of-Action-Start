@@ -173,7 +173,7 @@ def main(id):
     input_shape = (16,112,112,3)
     windows_length = 16
 
-    model = c3d_model.get_model(input_shape)
+    model = c3d_model.get_model()
     
     # Setting the Learning rate multipliers
     LR_mult_dict = {}
