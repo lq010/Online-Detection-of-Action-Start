@@ -4,7 +4,7 @@ videos/*
 nohup.out
 password.txt
 results/*
-weight/*.h5
+#weight/*.h5
 data/train_windows.pickle
 data/val_windows.pickle
 data/conv3d_deepnetA_sport1m_iter_1900000_TF.model
@@ -21,7 +21,6 @@ data/conv3d_deepnetA_sport1m_iter_1900000_TF.model
 
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
-
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 

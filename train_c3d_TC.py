@@ -7,8 +7,8 @@ import keras.backend as K
 import keras.callbacks as callbacks
 from keras.callbacks import ModelCheckpoint
 
-from LR_Adam import Adam
-from LR_SGD import SGD
+from src.LR_Adam import Adam
+from src.LR_SGD import SGD
 
 import keras.backend as K
 from keras.utils import np_utils
@@ -19,7 +19,7 @@ import cv2
 import matplotlib
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
-import util
+# import util
 import time
 
 from keras.callbacks import CSVLogger

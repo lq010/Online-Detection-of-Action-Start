@@ -56,8 +56,10 @@ def process_batch(windows, windows_length, img_path, train=True):
     return X_s, X_f,  X_s_labels
 
 def val_batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
-    N = (len(AS_windows)+batch_size)//2    
-    windows = AS_windows + A_windows[:N] + BG_windows[:N]
+    # N = (len(AS_windows)+batch_size)//2    
+    # windows = AS_windows + A_windows[:N] + BG_windows[:N]
+    windows = A_windows + A_windows + BG_windows
+    random.shuffle(windows)
     while True:
         for i in range(N_iterations):
             a = i*batch_size

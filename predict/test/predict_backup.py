@@ -16,8 +16,8 @@ from progressbar import ProgressBar
 import h5py
 from src.data import VideoGenerator
 
-from LR_Adam import Adam
-from LR_SGD import SGD
+from src.LR_Adam import Adam
+from src.LR_SGD import SGD
 
 def predict_videos(videos_dir, output_dir, batch_size, num_threads,
                      queue_size, num_gpus, weights_path):
