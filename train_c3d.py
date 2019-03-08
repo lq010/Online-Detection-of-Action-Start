@@ -23,7 +23,7 @@ from keras.callbacks import CSVLogger
 
 from src.LR_Adam import Adam
 from src.LR_SGD import SGD
-from src.batch_generator_without_followup import batch_generator_AS_A_BG_2_1_1
+from src.batch_generator_without_followup import batch_generator_AS_A_BG_2_1_1 as train_batch_generator
 from src.batch_generator_without_followup import val_batch_generator
 
 def plot_history(history, result_dir):
@@ -171,24 +171,24 @@ def main(id):
     with open(desp,'w') as f:
         f.write('batch size: {}\nbase_lr: {} \ntrain_samples:{} \nval_samples:{}\n '.format(batch_size,base_lr,N_train_samples,N_val_samples))
         f.write('init_weiht: {}'.format(model_weight_filename))
-        f.write('batch_generator: {}'.format(batch_generator_AS_A_BG_2_1_1))
+        f.write('batch_generator: {}'.format(train_batch_generator))
     # callbacks
     csv_logger = CSVLogger(result_dir +'/log.csv', separator=',')
     checkpointer = ModelCheckpoint(filepath=best_weight_name, verbose=1, save_best_only=False,save_weights_only=True)
     # NAME = "THUMOS-{}".format(int(time.time()))
     log_dir = os.path.join(result_dir,'log')
     tbCallBack = callbacks.TensorBoard(log_dir=log_dir, histogram_freq=0, write_graph=True, write_images=True)
-    train_generator = batch_generator_AS_A_BG_2_1_1(train_AS_windows, train_A_windows, train_BG_windows,
+    train_generator = train_batch_generator(train_AS_windows, train_A_windows, train_BG_windows,
                                                     windows_length, batch_size, N_train_iterations, N_classes,img_path)
     val_generator = val_batch_generator(val_AS_windows, val_A_windows, val_BG_windows,
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path)
 
     history = model.fit_generator(train_generator,
-                                  steps_per_epoch = 2,#N_train_iterations,
+                                  steps_per_epoch = N_train_iterations,
                                   epochs = epochs,
                                   callbacks=[csv_logger, tbCallBack, checkpointer],
                                   validation_data = val_generator,
-                                  validation_steps = 2,#N_val_iterations,
+                                  validation_steps = N_val_iterations,
                                   verbose=1)
 
     plot_history(history, result_dir)
