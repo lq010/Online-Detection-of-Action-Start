@@ -157,3 +157,17 @@ def batch_generator_AS(AS_windows, windows_length, batch_size, N_iterations, N_c
             X_s /= 255.
             Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
             yield X_s, Y
+
+
+def val_batch_generator(AS_windows, A_windows, BG_windows, windows_length, batch_size, N_iterations, N_classes, img_path):
+    N = (len(AS_windows)+batch_size)//2    
+    windows = AS_windows + A_windows[:N] + BG_windows[:N]
+    while True:
+        for i in range(N_iterations):
+            a = i*batch_size
+            b = a+batch_size
+            batch_windows = windows[a:b]
+            X_s, X_s_labels = process_batch(batch_windows, windows_length, img_path, isTrain= False)
+            X_s /= 255.
+            Y = np_utils.to_categorical(np.array(X_s_labels), N_classes)
+            yield X_s, Y
