@@ -17,7 +17,7 @@ for line in lines:
     item = line.strip().split()
     class_index[int(item[2])] = item[1]
 index_file.close()
-
+class_index[21] = 'fake'
 print(class_index)
 def main():
 
@@ -33,7 +33,7 @@ def main():
     model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
     # model_weight_filename = '/media/lq/C13E-1ED0/dataset/THUMOS/result/adam_temporal/best_result/adam_temporal/weights.hdf5'
     c3d_TC_weights ='/home/lq/Documents/Thesis/Thesis/results/adam_temporal_8/weights/weights.02-2.111.hdf5'
-    c3d_TC_GAN_weights = '/home/lq/Documents/Thesis/Thesis/results/gan_2/weights/c3d_TC_GAN_21_outputs_it2500.hdf5'
+    c3d_TC_GAN_weights = '/home/lq/Documents/Thesis/Thesis/results/gan_9/weights/c3d_TC_GAN_21_outputs_it1500.hdf5'
     model.load_weights(c3d_TC_GAN_weights)
     # model.load_weights('results/weights_c3d.h5')
 
@@ -49,7 +49,7 @@ def main():
     val_golf = '/media/lq/C13E-1ED0/dataset/THUMOS/validation/video_validation_0000282.mp4'
 
     test_firsbeeCatch= '/media/lq/C13E-1ED0/dataset/THUMOS/test/video_test_0000413.mp4'
-    test_baseball = '/media/lq/C13E-1ED0/dataset/THUMOS/test/video_test_0001324.mp4'
+    test_baseball = '/media/lq/C13E-1ED0/dataset/THUMOS/test/video_test_0000664.mp4'
     test_basketball= '/media/lq/C13E-1ED0/dataset/THUMOS/test/video_test_0000179.mp4'
     test_billiards = '/media/lq/C13E-1ED0/dataset/THUMOS/test/video_test_0001146.mp4'
     test_billiards2 = '/media/lq/C13E-1ED0/dataset/THUMOS/test/video_test_0001075.mp4'
@@ -59,7 +59,7 @@ def main():
     
     CleanandJerk ='/media/lq/C13E-1ED0/dataset/THUMOS/111/video_test_0000698.mp4'
     large = '/media/lq/C13E-1ED0/dataset/THUMOS/test_large/video_test_0000793.mp4'
-    video = test_basketball
+    video = test_billiards2
     cap = cv2.VideoCapture(video)
 
     clip = []
