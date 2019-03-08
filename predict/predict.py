@@ -105,25 +105,6 @@ def predict_videos(videos_dir, output_file, weights_file,
             print('Loading model')
             model = c3d_model.get_model()
             print('Compiling model')
-                # Setting the Learning rate multipliers
-            LR_mult_dict = {}
-            LR_mult_dict['conv1']=1
-            LR_mult_dict['conv2']=1
-            LR_mult_dict['conv3a']=1
-            LR_mult_dict['conv3b']=1
-            LR_mult_dict['conv4a']=1
-            LR_mult_dict['conv4b']=1
-            LR_mult_dict['conv5a']=1
-            LR_mult_dict['conv5b']=1
-            LR_mult_dict['fc6']=1
-            LR_mult_dict['fc7']=1
-            LR_mult_dict['fc8']=5
-            # Setting up optimizer
-            base_lr = 0.00001
-            adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
-            sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
-            opt = adam 
-            model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
         
             print('Compiling done!')
             print('laoding weight-------{}'.format(weights_file))
@@ -191,6 +172,7 @@ def predict_videos(videos_dir, output_file, weights_file,
             self.counter = 0
         def run(self):
             print("saver task runing")
+            t1 = time.time()
             while not (_stop_all_extractors.is_set() and data_save_queue.empty()):
                 extracted_output = None
                 while True:
@@ -211,9 +193,10 @@ def predict_videos(videos_dir, output_file, weights_file,
                 self.counter += 1
                 print('Save prediction: {} ({}/{})'.format(video_id,self.counter,nb_videos))
                 sys.stdout.flush()
+            t2 = time.time()
             if self.counter<nb_videos:
                 print("{} videos are not processed, please run it again.".format(nb_videos-self.counter))
-            print("saver task stopped.")
+            print("saver task stopped. time: {}".format(t2-t1))
 
 
    

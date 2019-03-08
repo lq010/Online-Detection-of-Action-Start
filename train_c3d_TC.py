@@ -49,8 +49,8 @@ def plot_history(history, result_dir):
     plt.close()
 
 
-def zero_loss(y_true, y_pred):
-    return K.zeros_like(y_pred)
+# def zero_loss(y_true, y_pred):
+#     return K.zeros_like(y_pred)
 
 
 
@@ -61,7 +61,7 @@ def main(id):
     model_weight_filename = os.path.join(weights_dir, 'sports1M_weights_tf.h5')
     N_classes = 20+1
     batch_size = 16
-    epochs = 6
+    epochs = 4
     input_shape = (16,112,112,3)
 
     windows_length = 16 #clip
@@ -70,7 +70,7 @@ def main(id):
 
     def my_l2 (y_true,y_pred):
         loss = tf.nn.l2_loss(y_pred)
-        return loss
+        return tf.reduce_mean(loss)#loss
 
     # Setting the Learning rate multipliers
     LR_mult_dict = {}
@@ -87,7 +87,7 @@ def main(id):
     LR_mult_dict['fc8']=10
 
     # Setting up optimizer
-    base_lr = 0.00001
+    base_lr = 0.000005
     adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
     # sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
     opt = adam 
@@ -161,11 +161,12 @@ def main(id):
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path)
                                                 
     history = model.fit_generator(train_generator,
-                                  steps_per_epoch=N_train_iterations,
+                                  steps_per_epoch= N_train_iterations,
                                   epochs=epochs,
                                   callbacks=[csv_logger, tbCallBack, checkpointer],
                                   validation_data=val_generator,
-                                  validation_steps=N_val_iterations,
+                                  validation_steps= N_val_iterations,
+                                  shuffle=False,
                                   verbose=1)   
 
     plot_history(history, result_dir)
