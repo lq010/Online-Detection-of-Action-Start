@@ -72,7 +72,7 @@ def main(id):
 
     N_classes = 20+1
     batch_size = 16
-    epochs = 4
+    epochs = 5
     input_shape = (16,112,112,3)
     windows_length = 16
 
@@ -97,7 +97,9 @@ def main(id):
     adam = Adam(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
     # sgd = SGD(lr=base_lr, decay=0.00005, multipliers=LR_mult_dict)
     opt = adam
-    
+    convLayers = ['conv1','conv2','conv3a','conv3b','conv4a']
+    for layer in convLayers:
+        model.get_layer(layer).trainable = False
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
     model.load_weights(model_weight_filename, by_name = True, skip_mismatch=True, reshape=True)
 ######################    
@@ -115,7 +117,7 @@ def main(id):
 #####################
 
     model.summary()
-       
+   
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_A_windows, train_BG_windows = load_train_data() # load train data
    
