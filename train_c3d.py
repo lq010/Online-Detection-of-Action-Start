@@ -188,7 +188,7 @@ def main(id):
                                                     windows_length, batch_size, N_val_iterations, N_classes,img_path)
 
     history = model.fit_generator(train_generator,
-                                  steps_per_epoch = N_train_iterations,
+                                  steps_per_epoch = 2,#N_train_iterations,
                                   epochs = epochs,
                                   callbacks=[csv_logger, tbCallBack, checkpointer],
                                   validation_data = val_generator,
