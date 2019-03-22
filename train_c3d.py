@@ -23,7 +23,7 @@ from keras.callbacks import CSVLogger
 
 from src.LR_Adam import Adam
 from src.LR_SGD import SGD
-from src.batch_generator_without_followup import batch_generator_AS_A_BG_2_1_1 as train_batch_generator
+from src.batch_generator_without_followup import batch_generator_AS_nonAS_1_1 as train_batch_generator
 from src.batch_generator_without_followup import val_batch_generator
 
 def plot_history(history, result_dir):
@@ -71,7 +71,7 @@ def main(id):
 
 
     N_classes = 20+1
-    batch_size = 16
+    batch_size = 24
     epochs = 5
     input_shape = (16,112,112,3)
     windows_length = 16
@@ -121,6 +121,8 @@ def main(id):
     from dataUtil import load_train_data, load_val_data
     train_AS_windows, train_A_windows, train_BG_windows = load_train_data() # load train data
    
+    print(train_BG_windows[:10])
+    exit()
     # N_A_samples = len(train_A_windows)
     # N_batch_groups = N_A_samples // (batch_size//2 + batch_size//4)
     # N_train_iterations = N_batch_groups * 2
