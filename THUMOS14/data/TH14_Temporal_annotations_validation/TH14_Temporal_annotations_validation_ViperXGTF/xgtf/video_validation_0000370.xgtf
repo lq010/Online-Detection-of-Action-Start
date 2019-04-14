@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viper xmlns="http://lamp.cfar.umd.edu/viper#" xmlns:data="http://lamp.cfar.umd.edu/viperdata#">
+    <config>
+        <descriptor name="BasketballDunk" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="BilliardsShot" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CleanandJerk" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CliffDiving" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CricketBowling" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CricketShot" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="Diving" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="FrisbeeCatch" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="GolfSwing" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="HighJump" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="JavelinThrow" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="LongJump" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="PoleVault" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="ShotPut" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="SoccerPenalty" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="TennisSwing" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="ThrowDiscus" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="VolleyballSpike" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="Ambiguous" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="Information" type="FILE">
+            <attribute dynamic="false" name="SOURCETYPE" type="http://lamp.cfar.umd.edu/viperdata#lvalue">
+                <data:lvalue-possibles>
+                    <data:lvalue-enum value="SEQUENCE"/>
+                    <data:lvalue-enum value="FRAMES"/>
+                </data:lvalue-possibles>
+            </attribute>
+            <attribute dynamic="false" name="NUMFRAMES" type="http://lamp.cfar.umd.edu/viperdata#dvalue"/>
+            <attribute dynamic="false" name="FRAMERATE" type="http://lamp.cfar.umd.edu/viperdata#fvalue"/>
+            <attribute dynamic="false" name="H-FRAME-SIZE" type="http://lamp.cfar.umd.edu/viperdata#dvalue"/>
+            <attribute dynamic="false" name="V-FRAME-SIZE" type="http://lamp.cfar.umd.edu/viperdata#dvalue"/>
+        </descriptor>
+    </config>
+    <data>
+        <sourcefile filename="file:/c:/video/thumos14/Validation_set/video/video_validation_0000370.mpeg">
+            <file id="0" name="Information">
+                <attribute name="SOURCETYPE"/>
+                <attribute name="NUMFRAMES">
+                    <data:dvalue value="22632"/>
+                </attribute>
+                <attribute name="FRAMERATE">
+                    <data:fvalue value="1.0"/>
+                </attribute>
+                <attribute name="H-FRAME-SIZE"/>
+                <attribute name="V-FRAME-SIZE"/>
+            </file>
+            <object framespan="2593:2774" id="0" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="2864:2965" id="1" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="3945:4169" id="2" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="4304:4382" id="3" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="4393:4472" id="4" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5206:5357" id="5" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5548:5654" id="6" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5705:5822" id="7" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7173:7307" id="8" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7503:7593" id="9" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7638:7744" id="10" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="8624:8803" id="11" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="8915:9050" id="12" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="9106:9218" id="13" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="9901:10036" id="14" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="10557:10658" id="15" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="10697:10854" id="16" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="11911:12053" id="17" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="12272:12395" id="18" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="13375:13555" id="19" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="13902:14009" id="20" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14037:14126" id="21" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14322:14468" id="22" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="16431:16564" id="25" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="16883:16999" id="26" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="18334:18459" id="27" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14623:14949" id="0" name="Ambiguous">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="17008:17092" id="28" name="HighJump">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+        </sourcefile>
+    </data>
+</viper>

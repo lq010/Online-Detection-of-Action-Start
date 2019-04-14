@@ -1,1 +1,0 @@
-wget https://storage.googleapis.com/thumos14_files/TH14_validation_set_mp4.zip

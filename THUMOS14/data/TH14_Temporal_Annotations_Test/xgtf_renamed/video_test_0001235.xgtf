@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viper xmlns="http://lamp.cfar.umd.edu/viper#" xmlns:data="http://lamp.cfar.umd.edu/viperdata#">
+    <config>
+        <descriptor name="BasketballDunk" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="BilliardsShot" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CleanandJerk" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CliffDiving" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CricketBowling" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="CricketShot" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="Diving" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="FrisbeeCatch" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="GolfSwing" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="HighJump" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="JavelinThrow" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="LongJump" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="PoleVault" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="ShotPut" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="SoccerPenalty" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="TennisSwing" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="ThrowDiscus" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="VolleyballSpike" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="Ambiguous" type="OBJECT">
+            <attribute dynamic="true" name="Location" type="http://lamp.cfar.umd.edu/viperdata#bbox"/>
+            <attribute dynamic="false" name="Truncated" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+            <attribute dynamic="false" name="Difficult" type="http://lamp.cfar.umd.edu/viperdata#bvalue"/>
+        </descriptor>
+        <descriptor name="Information" type="FILE">
+            <attribute dynamic="false" name="SOURCETYPE" type="http://lamp.cfar.umd.edu/viperdata#lvalue">
+                <data:lvalue-possibles>
+                    <data:lvalue-enum value="SEQUENCE"/>
+                    <data:lvalue-enum value="FRAMES"/>
+                </data:lvalue-possibles>
+            </attribute>
+            <attribute dynamic="false" name="NUMFRAMES" type="http://lamp.cfar.umd.edu/viperdata#dvalue"/>
+            <attribute dynamic="false" name="FRAMERATE" type="http://lamp.cfar.umd.edu/viperdata#fvalue"/>
+            <attribute dynamic="false" name="H-FRAME-SIZE" type="http://lamp.cfar.umd.edu/viperdata#dvalue"/>
+            <attribute dynamic="false" name="V-FRAME-SIZE" type="http://lamp.cfar.umd.edu/viperdata#dvalue"/>
+        </descriptor>
+    </config>
+    <data>
+        <sourcefile filename="file:/c:/video/thumos14/Test_set/video/video_test_0001235.mpeg">
+            <file id="0" name="Information">
+                <attribute name="SOURCETYPE"/>
+                <attribute name="NUMFRAMES">
+                    <data:dvalue value="25185"/>
+                </attribute>
+                <attribute name="FRAMERATE">
+                    <data:fvalue value="1.0"/>
+                </attribute>
+                <attribute name="H-FRAME-SIZE"/>
+                <attribute name="V-FRAME-SIZE"/>
+            </file>
+            <object framespan="545:692" id="0" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="706:840" id="1" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="908:1080" id="2" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="1086:1255" id="3" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="1310:1469" id="4" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="1499:1663" id="5" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="1715:1903" id="6" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="1922:2081" id="7" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="2144:2311" id="8" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="2338:2518" id="9" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="2606:2745" id="10" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="2770:2915" id="11" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="3027:3175" id="12" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="3180:3344" id="13" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="3421:3582" id="14" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="3593:3743" id="15" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="3820:4003" id="16" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="4017:4183" id="17" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="4252:4402" id="18" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="4413:4594" id="19" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="4673:4820" id="20" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="4831:5004" id="21" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5077:5239" id="22" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5252:5427" id="23" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5509:5638" id="24" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5654:5837" id="25" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="5917:6034" id="26" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="6051:6228" id="27" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="6261:6455" id="28" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="6466:6636" id="29" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="6658:6854" id="30" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="6871:7051" id="31" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7076:7229" id="32" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7245:7407" id="33" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7472:7623" id="34" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7639:7817" id="35" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="7871:8041" id="36" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="8046:8208" id="37" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="8282:8446" id="38" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="8454:8640" id="39" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="8692:8858" id="40" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="8880:9033" id="41" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="9159:9274" id="42" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="9293:9468" id="43" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="9504:9687" id="44" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="9695:9878" id="45" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="9963:10296" id="46" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="10338:10493" id="47" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="10499:10704" id="48" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="10712:10887" id="49" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="10903:11092" id="50" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="11106:11256" id="51" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="11267:11461" id="52" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="11513:11691" id="53" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="11707:11888" id="54" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="11920:12071" id="55" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="12087:12276" id="56" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="12284:12454" id="57" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="12467:12661" id="58" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="12697:12875" id="59" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="12888:13077" id="60" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="13175:13468" id="61" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="13490:13665" id="62" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="13676:13859" id="63" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="13919:14075" id="64" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14083:14247" id="65" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14304:14466" id="66" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14482:14649" id="67" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14679:14838" id="68" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="14851:15021" id="69" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="15037:15302" id="70" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="15365:15518" id="71" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="15534:15688" id="72" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="15747:15897" id="73" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="15909:16078" id="74" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="16164:16304" id="75" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="16320:16512" id="76" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="16540:16708" id="77" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="16725:16907" id="78" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="16913:17113" id="79" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="17130:17326" id="80" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="17343:17476" id="81" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="17485:17673" id="82" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="17718:17879" id="83" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="17890:18059" id="84" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="18125:18276" id="85" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="18301:18470" id="86" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="18537:18710" id="87" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="18720:18898" id="88" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="18948:19054" id="89" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="19060:19257" id="90" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="19271:19446" id="91" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="19453:19645" id="92" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="19691:19828" id="93" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="19832:20006" id="94" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="20074:20189" id="95" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="20200:20381" id="96" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="20413:20538" id="97" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="20542:20730" id="98" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="20928:21078" id="99" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="21085:21276" id="100" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="21420:21606" id="101" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="21613:21802" id="102" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="21834:22019" id="103" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="22028:22214" id="104" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="22410:22585" id="105" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="22591:22792" id="106" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="22963:23109" id="107" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="23123:23336" id="108" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="23474:23645" id="109" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+            <object framespan="23653:23860" id="110" name="PoleVault">
+                <attribute name="Location"/>
+                <attribute name="Truncated"/>
+                <attribute name="Difficult"/>
+            </object>
+        </sourcefile>
+    </data>
+</viper>

@@ -1,13 +1,15 @@
 *.hdf5
-test.py
 videos/*
 nohup.out
 password.txt
-results/*
+THUMOS14/results/*
+THUMOS14/models/tests/*
+THUMOS14/predict/test/*
 #weight/*.h5
 data/train_windows.pickle
 data/val_windows.pickle
 data/conv3d_deepnetA_sport1m_iter_1900000_TF.model
+
 # Created by https://www.gitignore.io/api/macos,linux,python,pycharm,visualstudiocode
 
 ### Linux ###
