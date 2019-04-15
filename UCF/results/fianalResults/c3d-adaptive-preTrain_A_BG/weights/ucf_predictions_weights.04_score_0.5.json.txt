@@ -1,0 +1,29 @@
+	Number of ground truth instances: 24
+	Number of predictions: 160
+	Fixed threshold for temporal offset: [0.2 0.4 0.6 0.8 1.  1.2 1.4 1.6 1.8 2. ]
+14.0
+146.0
+[RESULTS] Performance on Thumos detection task.
+action indexes: {'RoadAccidents': 0}
+temporal offset 0.2:
+	map: 0.008570620096498964
+temporal offset 0.4:
+	map: 0.01715686274509804
+temporal offset 0.6000000000000001:
+	map: 0.044744113861760915
+temporal offset 0.8:
+	map: 0.044744113861760915
+temporal offset 1.0:
+	map: 0.06141529632241707
+temporal offset 1.2:
+	map: 0.07704281872238528
+temporal offset 1.4000000000000001:
+	map: 0.08557422969187675
+temporal offset 1.6:
+	map: 0.08557422969187675
+temporal offset 1.8:
+	map: 0.10047852474323063
+temporal offset 2.0:
+	map: 0.11293650793650793
+
+Average-mAP: 0.06382373176734132

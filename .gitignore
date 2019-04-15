@@ -6,11 +6,10 @@ THUMOS14/results/*
 THUMOS14/models/tests/*
 THUMOS14/predict/test/*
 THUMOS14/data/*.pickle
-/home/lq/Documents/Thesis/Thesis/UCF/data/*.pickle
+UCF/data/*.pickle
+UCG/results/*
 #weight/*.h5
-data/train_windows.pickle
-data/val_windows.pickle
-data/conv3d_deepnetA_sport1m_iter_1900000_TF.model
+
 
 # Created by https://www.gitignore.io/api/macos,linux,python,pycharm,visualstudiocode
 

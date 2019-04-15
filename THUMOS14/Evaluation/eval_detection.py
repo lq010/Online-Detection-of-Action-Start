@@ -234,7 +234,7 @@ def compute_average_precision_detection(ground_truth, prediction, tOffset_thresh
     tp_cumsum = np.cumsum(tp, axis=1).astype(np.float)
     fp_cumsum = np.cumsum(fp, axis=1).astype(np.float)
     recall_cumsum = tp_cumsum / npos
-    print(tp_cumsum[-1][-1])
+    # print(tp_cumsum[-1][-1])
     # print(fp_cumsum[-1][-1])
     precision_cumsum = tp_cumsum / (tp_cumsum + fp_cumsum)
     
