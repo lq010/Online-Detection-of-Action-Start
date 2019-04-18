@@ -1,5 +1,0 @@
-batch size: 24
-base_lr: 1e-05 
-train_samples:25140 
- init_weiht: /home/lq/Documents/Thesis/Thesis/weight/sports1M_weights_tf.h5
-batch_generator: <function batch_generator_AS_nonAS_1_1 at 0x7f14359a7158>
