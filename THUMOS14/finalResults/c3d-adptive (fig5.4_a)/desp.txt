@@ -1,0 +1,3 @@
+bitch size 16
+eopch 2
+optimizer adam

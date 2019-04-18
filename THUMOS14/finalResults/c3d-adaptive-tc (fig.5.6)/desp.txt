@@ -1,0 +1,7 @@
+batch size: 16
+base_lr: 1e-05 
+train_samples:80284 
+val_samples:15334
+ loss_weight:[1, 0.001]
+init_weight: ./weight/sports1M_weights_tf.h5
+batch: <function train_batch_generator_AS_A_BG_2_1_1 at 0x7f07d6f3b0d0>

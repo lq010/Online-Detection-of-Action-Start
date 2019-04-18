@@ -1,0 +1,7 @@
+c3d weights: /home/lq/Documents/Thesis/Thesis/results/adam_temporal_8/weights/weights.02-2.111.hdf5
+disc_optimizer: {'lr': 9.999999974752427e-07, 'beta_1': 0.8999999761581421, 'beta_2': 0.9990000128746033, 'decay': 4.999999873689376e-05, 'epsilon': 1e-07, 'amsgrad': False}
+gen_optimizer: {'lr': 0.0006000000284984708, 'beta_1': 0.8999999761581421, 'beta_2': 0.9990000128746033, 'decay': 4.999999873689376e-05, 'epsilon': 1e-07, 'amsgrad': False}
+
+
+training D: batch_size 32 (16fake, 8AS, 4A, 4BG) 
+        G   siamese 16fake 16AS  loss-> K.mean
