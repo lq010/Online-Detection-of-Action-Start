@@ -23,7 +23,7 @@ This is a project trying to implement [ODAS][1].
 1. `./predict.sh` -> outputs predictions of input windows 
 2. `./create_final_prediction_file.sh` -> outputs a json file, which contains the AS predictions
 
--Evaluate:
+- Evaluate:
 1. `./evaluation.sh`
 
 #### UCF(roadAccidents) dataset:
@@ -41,7 +41,7 @@ This is a project trying to implement [ODAS][1].
 1. `./predict.sh` -> outputs predictions of input windows 
 2. `./create_final_prediction_file.sh` -> outputs a json file, which contains the AS predictions
 
--Evaluate:
+- Evaluate:
 1. `./evaluation.sh`
 
 [1]:http://openaccess.thecvf.com/content_ECCV_2018/html/Zheng_Shou_Online_Detection_of_ECCV_2018_paper.html
