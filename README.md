@@ -1,4 +1,4 @@
-# Thesis
+# Online Detection of Action Start
 This is a project trying to implement [ODAS][1].
 
 ## Requirements:
