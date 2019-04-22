@@ -20,8 +20,8 @@ This is a project trying to implement [ODAS][1].
 | adaptive+TC+GAN  | `python train_c3d_TC_GAN.py`  |   adaptive+TC    |       
     
 - Predict:
-1. `./predict.sh` -> outputs predictions of input windows 
-2. `./create_final_prediction_file.sh` -> outputs a json file, which contains the AS predictions
+1. `./predict.sh` -> predictions of input windows 
+2. `./create_final_prediction_file.sh` -> AS predictions
 
 - Evaluate:
 1. `./evaluation.sh`
@@ -38,8 +38,8 @@ This is a project trying to implement [ODAS][1].
 | adaptive+TC+GAN  | `python train_c3d_TC_GAN.py`  |   adaptive+TC    |       
     
 - Predict:
-1. `./predict.sh` -> outputs predictions of input windows 
-2. `./create_final_prediction_file.sh` -> outputs a json file, which contains the AS predictions
+1. `./predict.sh` -> predictions of input windows 
+2. `./create_final_prediction_file.sh` -> AS predictions
 
 - Evaluate:
 1. `./evaluation.sh`
