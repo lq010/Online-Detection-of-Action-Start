@@ -1,6 +1,0 @@
-batch size: 16
-base_lr: 1e-05 
-train_samples:4318 
- loss_weight:[1, 0.001]
-init_weight: /media/lq/C13E-1ED0/dataset/UCF_Crimes/results/adam_c3d_pre_train/weights/weights.10.hdf5
-batch: <function train_batch_generator_AS_nonAS_1_1 at 0x7f90d4cbbf28>

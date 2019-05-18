@@ -7,7 +7,7 @@ THUMOS14/predict/test/*
 THUMOS14/data/*.pickle
 UCF/data/*.pickle
 UCG/results/*
-#weight/*.h5
+weight/*.h5
 
 
 # Created by https://www.gitignore.io/api/macos,linux,python,pycharm,visualstudiocode
